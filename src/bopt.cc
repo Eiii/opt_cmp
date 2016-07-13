@@ -101,7 +101,7 @@ void display_result(size_t step, const vectord& result, std::ostream& os)
   os << fn_value(result) << endl;
 }
 
-constexpr int num_it = 20;
+constexpr int num_it = 5;
 
 void display_avg_result(const vector<vector<double>>& rs, std::ostream& os)
 {
