@@ -1,0 +1,3 @@
+[submodule "clogo"]
+	path = clogo
+	url = ../clogo
