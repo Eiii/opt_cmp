@@ -8,14 +8,18 @@ set( PROJ_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 
 project( ${PROJ_NAME} )
 
+#set( Boost_NO_BOOST_CMAKE TRUE )
+add_subdirectory( bayesopt )
+set( BAYESOPT_INCLUDES "bayesopt/include" "bayesopt/utils" )
+
 add_subdirectory( clogo )
 set( CLOGO_INCLUDES "${CMAKE_SOURCE_DIR}/clogo/include" )
 
-set( CMAKE_CXX_COMPILER "g++" )
 set( CMAKE_CXX_FLAGS "-std=c++14 -Wall" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3" )
 set( CMAKE_CXX_FLAGS_DEBUG "-gdwarf-3" )
 
 include_directories( ${PROJ_INCLUDES} ${CLOGO_INCLUDES} )
+include_directories( SYSTEM  ${BAYESOPT_INCLUDES} )
 add_executable( ${PROJ_EXE} ${PROJ_SOURCES} )
-target_link_libraries( ${PROJ_EXE} clogo )
+target_link_libraries( ${PROJ_EXE} clogo bayesopt )

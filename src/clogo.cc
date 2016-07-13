@@ -1,20 +1,41 @@
 #include <cassert>
 #include <cmath>
+#include <iostream>
 
-extern "C" {
-#include "clogo/clogo.h"
+#include "common.h"
+#include "clogo.h"
+
+using std::cout;
+using std::endl;
+
+void display_result(const struct clogo_result& result)
+{
+  cout << result.samples << "\t";
+  cout << result.point[0] << "," << result.point[1] << "\t";
+  double regret = FN_MAX - result.value;
+  cout << regret << endl;
 }
 
-#define CAT(a, ...) a ## __VA_ARGS__
-#define _FN_MAX(x) CAT(MAX__, x)
-#define FN_MAX _FN_MAX(FN)
+void eval(struct clogo_options opt)
+{
+  struct clogo_state state = clogo_init(&opt);
+  while (!clogo_done(&state)) {
+    clogo_step(&state);
+    struct clogo_result result = clogo_finish(&state);
+    display_result(result);
+  }
+  clogo_delete(&state);
+}
 
-#define MAX__rosenbrock_2 (0.0)
-#define MAX__sin_2 (0.9517936893872353)
+void eval_soo()
+{
+  eval(test_soo());
+}
 
-#ifndef FN
-#define FN rosenbrock_2
-#endif
+void eval_logo()
+{
+  eval(test_logo());
+}
 
 int logo_schedule(
   const struct clogo_state *state
@@ -54,33 +75,6 @@ int soo_schedule(
   return 1;
 }
 
-double rosenbrock_2(
-  double *i
-) 
-{
-  double x = i[0], y = i[1];
-  double min = -5.0;
-  double max = 10.0;
-  x = min + x * (max - min);
-  y = min + y * (max - min);
-  return -(100.0 * pow(y - x * x, 2.0) + pow(x * x - 1.0, 2.0));
-}
-
-double sin_helper(
-  double x
-)
-{
-  return (sin(13.0 * x)*sin(27.0 * x) + 1.0) / 2;
-}
-
-double sin_2(
-  double *i
-)
-{
-  double x = i[0], y = i[1];
-  return sin_helper(x) * sin_helper(y);
-}
-
 double hmax(
   int n                    //current number of function eval
 )
@@ -91,14 +85,14 @@ double hmax(
 struct clogo_options test_soo()
 {
   struct clogo_options opt = { 
-    .max = 4000,
+    .max = TOTAL_SAMPLES,
     .k = 3,
     .fn = &FN,
     .hmax = &hmax,
     .w_schedule = soo_schedule,
     .init_w = 1,
-    .epsilon = 1e-4,
-    .fn_optimum = FN_MAX,
+    .epsilon = INFINITY,
+    .fn_optimum = INFINITY,
   };
   return opt;
 }
@@ -106,14 +100,14 @@ struct clogo_options test_soo()
 struct clogo_options test_logo()
 {
   struct clogo_options opt = { 
-    .max = 4000,
+    .max = TOTAL_SAMPLES,
     .k = 3,
     .fn = &FN,
     .hmax = &hmax,
     .w_schedule = logo_schedule,
     .init_w = 3,
-    .epsilon = 1e-4,
-    .fn_optimum = FN_MAX,
+    .epsilon = INFINITY,
+    .fn_optimum = INFINITY,
   };
   return opt;
 }
