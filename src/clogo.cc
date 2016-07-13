@@ -11,7 +11,7 @@ using std::endl;
 void display_result(const struct clogo_result& result, std::ostream& os)
 {
   os << result.samples << "\t";
-  os << result.point[0] << "," << result.point[1] << "\t";
+  //os << result.point[0] << "," << result.point[1] << "\t";
   double regret = FN_MAX - result.value;
   os << regret << endl;
 }
@@ -27,6 +27,13 @@ void eval(struct clogo_options opt, std::ofstream& of)
   clogo_delete(&state);
 }
 
+double final_eval(struct clogo_options opt)
+{
+  struct clogo_result result = clogo_optimize(&opt);
+  double regret = FN_MAX - result.value;
+  return regret;
+}
+
 void eval_soo(std::ofstream& of)
 {
   eval(test_soo(), of);
@@ -35,6 +42,11 @@ void eval_soo(std::ofstream& of)
 void eval_logo(std::ofstream& of)
 {
   eval(test_logo(), of);
+}
+
+double eval_logo_final()
+{
+  return final_eval(test_logo());
 }
 
 int logo_schedule(

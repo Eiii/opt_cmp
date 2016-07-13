@@ -12,7 +12,7 @@
 #define MAX__sin_2 (0.9517936893872353)
 
 
-#define TOTAL_SAMPLES 100
+#define TOTAL_SAMPLES 200
 
 double rosenbrock_2(double *i);
 double sin_2(double *i);

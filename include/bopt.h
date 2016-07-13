@@ -27,3 +27,5 @@ class BOModel : public bayesopt::ContinuousModel
 };
 
 void eval_bo(std::ofstream& os);
+void eval_good_bo(std::ofstream& os);
+double eval_good_bo_final();
