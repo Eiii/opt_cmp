@@ -50,15 +50,15 @@ double sample(const boost::numeric::ublas::vector<double> &query)
   return -FN(pt);
 }
 
-void display_result(size_t step, const vectord& result)
+void display_result(size_t step, const vectord& result, std::ostream& os)
 {
-  cout << step << "\t";
-  cout << result[0] << "," << result[1] << "\t";
+  os << step << "\t";
+  os << result[0] << "," << result[1] << "\t";
   double regret = FN_MAX - (-sample(result));
-  cout << regret << endl;
+  os << regret << endl;
 }
 
-void eval_bo()
+void eval_bo(std::ofstream &of)
 {
   bopt_params params = default_params(1337);
   BOModel model(params); 
@@ -66,6 +66,6 @@ void eval_bo()
   for (size_t i = 0; i < params.n_iterations; i++) {
     model.stepOptimization();
     auto result = model.getFinalResult();
-    display_result(i, result);
+    display_result(i, result, of);
   }
 }

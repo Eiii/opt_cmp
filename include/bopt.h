@@ -3,6 +3,8 @@
 #include "bayesopt.hpp"
 #include "common.h"
 
+#include <fstream>
+
 double sample(const boost::numeric::ublas::vector<double> &query);
 
 class BOModel : public bayesopt::ContinuousModel
@@ -24,4 +26,4 @@ class BOModel : public bayesopt::ContinuousModel
 
 };
 
-void eval_bo();
+void eval_bo(std::ofstream& os);

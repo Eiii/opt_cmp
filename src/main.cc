@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <cmath>
+#include <fstream>
 
 #include "clogo.h"
 #include "bopt.h"
@@ -36,10 +37,14 @@ double sin_2(
 }
 
 int main() {
-  cout << "SOO:" << endl;
-  eval_soo();
-  cout << "LOGO:" << endl;
-  eval_logo();
-  cout << "BO:" << endl;
-  eval_bo();
+  std::ofstream of;
+  of.open("soo.csv");
+  eval_soo(of);
+  of.close();
+  of.open("logo.csv");
+  eval_logo(of);
+  of.close();
+  of.open("bo.csv");
+  eval_bo(of);
+  of.close();
 }

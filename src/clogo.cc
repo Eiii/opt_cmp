@@ -8,33 +8,33 @@
 using std::cout;
 using std::endl;
 
-void display_result(const struct clogo_result& result)
+void display_result(const struct clogo_result& result, std::ostream& os)
 {
-  cout << result.samples << "\t";
-  cout << result.point[0] << "," << result.point[1] << "\t";
+  os << result.samples << "\t";
+  os << result.point[0] << "," << result.point[1] << "\t";
   double regret = FN_MAX - result.value;
-  cout << regret << endl;
+  os << regret << endl;
 }
 
-void eval(struct clogo_options opt)
+void eval(struct clogo_options opt, std::ofstream& of)
 {
   struct clogo_state state = clogo_init(&opt);
   while (!clogo_done(&state)) {
     clogo_step(&state);
     struct clogo_result result = clogo_finish(&state);
-    display_result(result);
+    display_result(result, of);
   }
   clogo_delete(&state);
 }
 
-void eval_soo()
+void eval_soo(std::ofstream& of)
 {
-  eval(test_soo());
+  eval(test_soo(), of);
 }
 
-void eval_logo()
+void eval_logo(std::ofstream& of)
 {
-  eval(test_logo());
+  eval(test_logo(), of);
 }
 
 int logo_schedule(
