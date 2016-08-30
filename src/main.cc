@@ -51,16 +51,24 @@ double sin_2(
 void comp() 
 {
   s_angle = 0.0;
-  std::ofstream of;
-  of.open("soo.csv");
-  eval_soo(of);
-  of.close();
-  of.open("logo.csv");
-  eval_logo(of);
-  of.close();
-  of.open("bo.csv");
-  eval_good_bo(of);
-  of.close();
+  {
+    cout << "SOO" << endl;
+    std::ofstream of("soo.csv");
+    eval_soo(of);
+    of.close();
+  }
+  {
+    cout << "LOGO" << endl;
+    std::ofstream of("logo.csv");
+    eval_logo(of);
+    of.close();
+  }
+  {
+    cout << "BO" << endl;
+    std::ofstream of("bo.csv");
+    eval_good_bo(of);
+    of.close();
+  }
 }
 
 void output_angle_regrets(std::vector<double> v, std::string name)
@@ -93,5 +101,5 @@ void rot()
 }
 
 int main() {
-  rot();
+  comp();
 }

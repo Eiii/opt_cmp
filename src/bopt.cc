@@ -8,6 +8,8 @@ using std::cout;
 using std::endl;
 using std::vector;
 
+constexpr int num_it = 5;
+
 bopt_params default_params(int seed)
 {
   bopt_params params = initialize_parameters_to_default();
@@ -35,7 +37,7 @@ bopt_params default_params(int seed)
   //TODO this is just so that the initial observations are always the same
   params.random_seed = seed; 
   params.n_init_samples = 2;
-  params.n_iterations = TOTAL_SAMPLES-params.n_init_samples;
+  params.n_iterations = TOTAL_SAMPLES - params.n_init_samples;
   params.init_method = 3; //Uniform samples
   params.n_iter_relearn = 100; //TODO ???
   params.force_jump = 0; //Don't jump
@@ -100,8 +102,6 @@ void display_result(size_t step, const vectord& result, std::ostream& os)
   os << result[0] << "," << result[1] << "\t";
   os << fn_value(result) << endl;
 }
-
-constexpr int num_it = 5;
 
 void display_avg_result(const vector<vector<double>>& rs, std::ostream& os)
 {

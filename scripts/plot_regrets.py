@@ -13,7 +13,7 @@ ylabel_running = "Avg. Running Experiments"
 dataset = (
            ('soo', 'SOO'),
            ('logo', 'LOGO'),
-           ('bo', 'bayesopt (50 runs)'),
+           ('bo', 'bayesopt (5 runs)'),
           )
 
 def regret_file(prefix):
