@@ -7,7 +7,7 @@ using std::cout;
 using std::endl;
 using std::vector;
 
-constexpr int num_it = 50;
+constexpr int num_it = 25;
 constexpr int init_samples = 12;
 
 bopt_params good_params(int seed, int total_samples)
@@ -61,9 +61,9 @@ void display_result(size_t step, const vectord& result, const Function& fn, std:
 }
 
 void display_avg_result(const vector<vector<double>>& rs, const Function& fn, 
-                        int samples, std::ostream& os)
+                        std::ostream& os)
 {
-  os << fn.name << ",BO1," << samples << endl;
+  os << fn.name << ",BO1," << rs.size() << endl;
   for (const auto& regrets : rs) {
     for (auto it = regrets.begin(); it != regrets.end(); ++it) {
       os << *it;
@@ -91,7 +91,7 @@ void eval(std::function<bopt_params (int,int)> param_fn, int total_samples, cons
       regrets[x].push_back(fn_value(result, objective));
     }
   }
-  display_avg_result(regrets, objective, total_samples, of);
+  display_avg_result(regrets, objective, of);
   cout << endl;
 }
 
