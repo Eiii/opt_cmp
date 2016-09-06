@@ -29,5 +29,4 @@ class BOModel : public bayesopt::ContinuousModel
 
 };
 
-void eval_bo(const Function& fn, std::ofstream& os);
-void eval_good_bo(const Function& fn, std::ofstream& os);
+void eval_good_bo(const Function& fn, int samples, std::ofstream& os);
