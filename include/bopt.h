@@ -1,21 +1,19 @@
 #pragma once
 
+#include "functions.h"
 #include "bayesopt.hpp"
-#include "common.h"
 
 #include <fstream>
-
-double sample(const boost::numeric::ublas::vector<double> &query);
 
 class BOModel : public bayesopt::ContinuousModel
 {
   public:
-    BOModel(bopt_params params) : 
-      ContinuousModel(FN_DIM, params) {}
+    BOModel(bopt_params params, const Function& fn) : 
+      ContinuousModel(fn.dim, params), fn_(fn) {}
 
     double evaluateSample(const boost::numeric::ublas::vector<double> &query)
     {
-      return sample(query);
+      return -fn_.fn(query);
     }
 
     bool checkReachability(const boost::numeric::ublas::vector<double> &query)
@@ -24,8 +22,12 @@ class BOModel : public bayesopt::ContinuousModel
       return true;
     }
 
+    const Function& fn() const { return fn_; }
+
+  protected:
+    const Function& fn_;
+
 };
 
-void eval_bo(std::ofstream& os);
-void eval_good_bo(std::ofstream& os);
-double eval_good_bo_final();
+void eval_bo(const Function& fn, std::ofstream& os);
+void eval_good_bo(const Function& fn, std::ofstream& os);

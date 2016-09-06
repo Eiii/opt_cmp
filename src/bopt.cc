@@ -1,11 +1,7 @@
-#include "common.h"
 #include "bopt.h"
 
 #include <iostream>
 #include <vector>
-
-#define STR_(x) #x
-#define STR(x) STR_(x)
 
 using std::cout;
 using std::endl;
@@ -13,6 +9,7 @@ using std::vector;
 
 constexpr int num_it = 10;
 constexpr int init_samples = 2;
+constexpr int total_samples = 100;
 
 bopt_params default_params(int seed)
 {
@@ -41,9 +38,9 @@ bopt_params default_params(int seed)
   //TODO this is just so that the initial observations are always the same
   params.random_seed = seed; 
   params.n_init_samples = init_samples;
-  params.n_iterations = TOTAL_SAMPLES - params.n_init_samples;
+  params.n_iterations = total_samples - params.n_init_samples;
   params.init_method = 3; //Uniform samples
-  params.n_iter_relearn = 100; //TODO ???
+  params.n_iter_relearn = 20; //TODO ???
   params.force_jump = 0; //Don't jump
 
   params.verbose_level = -1;
@@ -78,7 +75,7 @@ bopt_params good_params(int seed)
   //TODO this is just so that the initial observations are always the same
   params.random_seed = seed; 
   params.n_init_samples = init_samples;
-  params.n_iterations = TOTAL_SAMPLES-params.n_init_samples;
+  params.n_iterations = total_samples-params.n_init_samples;
   params.init_method = 3; //Uniform samples
   params.n_iter_relearn = 50; //TODO ???
   params.force_jump = 0; //Don't jump
@@ -88,35 +85,22 @@ bopt_params good_params(int seed)
   return params;
 }
 
-double fn_value(const vectord& result) 
+double fn_value(const vectord& result, const Function& fn) 
 {
-  double diff = FN_MAX - (-sample(result));
-  if (FN_MAX == 0.0) {
-    return diff;
-  } else {
-    return diff / fabs(FN_MAX);
-  }
+  double diff = fn.fn_max - fn.fn(result);
+  return diff;
 }
 
-double sample(const boost::numeric::ublas::vector<double> &query)
-{
-  double pt[FN_DIM];
-  for (int i = 0; i < FN_DIM; i++) {
-    pt[i] = query[i];
-  }
-  return -FN(pt);
-}
-
-void display_result(size_t step, const vectord& result, std::ostream& os)
+void display_result(size_t step, const vectord& result, const Function& fn, std::ostream& os)
 {
   os << step << "\t";
   os << result[0] << "," << result[1] << "\t";
-  os << fn_value(result) << endl;
+  os << fn_value(result, fn) << endl;
 }
 
-void display_avg_result(const vector<vector<double>>& rs, std::ostream& os)
+void display_avg_result(const vector<vector<double>>& rs, const Function& fn, std::ostream& os)
 {
-  os << STR(FN) << ",BO1" << endl;
+  os << fn.name << ",BO1" << endl;
   for (size_t i = 0; i < rs[0].size(); i++) {
     double avg = 0.0;
     for (size_t j = 0; j < num_it; j++) {
@@ -129,13 +113,13 @@ void display_avg_result(const vector<vector<double>>& rs, std::ostream& os)
   os << endl;
 }
 
-void eval(std::function<bopt_params (int)> fn, std::ofstream& of)
+void eval(std::function<bopt_params (int)> param_fn, const Function& objective, std::ofstream& of)
 {
   vector<vector<double>> regrets(num_it);
   for (int x = 0; x < num_it; x++) {
     cout << x << " "; cout.flush();
-    bopt_params params = fn(1338+x);
-    BOModel model(params); 
+    bopt_params params = param_fn(1338+x);
+    BOModel model(params, objective); 
     model.initializeOptimization();
     regrets[x].clear();
     for (size_t i = 0; i < init_samples; i++) {
@@ -144,50 +128,19 @@ void eval(std::function<bopt_params (int)> fn, std::ofstream& of)
     for (size_t i = 0; i < params.n_iterations; i++) {
       model.stepOptimization();
       auto result = model.getFinalResult();
-      regrets[x].push_back(fn_value(result));
+      regrets[x].push_back(fn_value(result, objective));
     }
   }
-  display_avg_result(regrets, of);
+  display_avg_result(regrets, objective, of);
   cout << endl;
 }
 
-double eval_final(std::function<bopt_params (int)> fn)
+void eval_bo(const Function& fn, std::ofstream& of)
 {
-  vector<double> regrets(num_it);
-  for (int x = 0; x < num_it; x++) {
-    cout << x << " "; cout.flush();
-    bopt_params params = fn(1338+x);
-    BOModel model(params); 
-    model.initializeOptimization();
-    for (size_t i = 0; i < params.n_iterations; i++) {
-      model.stepOptimization();
-    }
-    auto result = model.getFinalResult();
-    regrets.push_back(fn_value(result));
-  }
-  cout << endl;
-  
-  double f = 0.0;
-  for (const auto& r : regrets) {
-    f += r;
-  }
-  f /= (double)num_it;
-
-  return f;
+  eval(default_params, fn, of);
 }
 
-
-void eval_bo(std::ofstream& of)
+void eval_good_bo(const Function& fn, std::ofstream& of)
 {
-  eval(default_params, of);
-}
-
-void eval_good_bo(std::ofstream& of)
-{
-  eval(good_params, of);
-}
-
-double eval_good_bo_final()
-{
-  return eval_final(good_params);
+  eval(good_params, fn, of);
 }
