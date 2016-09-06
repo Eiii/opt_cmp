@@ -11,7 +11,7 @@ class BOModel : public bayesopt::ContinuousModel
 {
   public:
     BOModel(bopt_params params) : 
-      ContinuousModel(2, params) {}
+      ContinuousModel(FN_DIM, params) {}
 
     double evaluateSample(const boost::numeric::ublas::vector<double> &query)
     {

@@ -9,95 +9,78 @@
 using std::cout;
 using std::endl;
 
-double s_angle;
-
-void rotate(double deg, double *x, double *y)
-{
-  double rad = deg / 360.0;
-  double new_x = cos(rad) * *x  - sin(rad) * *y;
-  double new_y = sin(rad) * *x  + cos(rad) * *y;
-  *x = new_x;
-  *y = new_y;
-}
-
-double rosenbrock_2(
-  double *i
-) 
+double rosenbrock_2(double *i) 
 {
   double x = i[0], y = i[1];
   double min = -5.0;
   double max = 10.0;
   x = min + x * (max - min);
   y = min + y * (max - min);
-  rotate(s_angle, &x, &y);
-  return -(100.0 * pow(y - x * x, 2.0) + pow(x * x - 1.0, 2.0));
+  return -(100.0 * pow(y - x * x, 2.0) + pow(x - 1.0, 2.0));
 }
 
-double sin_helper(
-  double x
-)
+double rosenbrock_10(double *in) 
+{
+  double i[10];
+  double min = -5.0;
+  double max = 10.0;
+  for (int x = 0; x < 10; x++) {
+    i[x] = min + in[x] * (max - min);
+  }
+  double sum = 0.0;
+  for (size_t x = 0; x < 10-1; x++) {
+    sum += 100.0 * pow(i[x+1] - i[x] * i[x], 2.0) 
+           + pow(1.0 - i[x], 2.0);
+  }
+  return -sum;
+}
+
+double sin_helper(double x)
 {
   return (sin(13.0 * x)*sin(27.0 * x) + 1.0) / 2;
 }
 
-double sin_2(
-  double *i
-)
+double sin_2(double *i)
 {
   double x = i[0], y = i[1];
   return sin_helper(x) * sin_helper(y);
 }
 
+double peaks(double *i)
+{
+    double x = -3 + i[0] * (3 + 3);
+    double y = -3 + i[1] * (3 + 3);
+    double sum = 0.0;
+    sum += 3.0 * pow(1.0 - x, 2.0) * exp(-(x * x) - pow(y + 1.0, 2.0))
+           - 10.0 * (x / 5.0 - pow(x, 3.0) - pow(y, 5.0)) * exp(-(x * x) - (y * y))
+           - 1.0 / 3.0 * exp(-pow(x + 1.0, 2.0) - (y * y));
+    return sum;
+}
+
+double branin(double *i)
+{
+    double x = -5.0 + i[0] * (10.0 + 5.0);
+    double y = i[1] * 15.0;
+    double a = 1.0;
+    double b = 5.1 / (4.0 * M_PI * M_PI);
+    double c = 5.0 / M_PI;
+    double r = 6.0;
+    double s = 10.0;
+    double t = 1.0 / (8.0 * M_PI);
+    double val = a * pow(y - b * x * x + c * x - r, 2.0) 
+                 + s * (1.0 - t) * cos(x) 
+                 + s;
+    return -val;
+}
+
 void comp() 
 {
-  s_angle = 0.0;
-  {
-    cout << "SOO" << endl;
-    std::ofstream of("soo.csv");
-    eval_soo(of);
-    of.close();
-  }
-  {
-    cout << "LOGO" << endl;
-    std::ofstream of("logo.csv");
-    eval_logo(of);
-    of.close();
-  }
   {
     cout << "BO" << endl;
     std::ofstream of("bo.csv");
     eval_good_bo(of);
     of.close();
   }
-}
-
-void output_angle_regrets(std::vector<double> v, std::string name)
-{
-  std::ofstream of;
-  of.open(name);
-  for (size_t i = 0; i < v.size(); i++) {
-    of << i << "\t" << v[i] << endl;  
-  }
-  of.close();
-}
-
-void rot()
-{
-  //LOGO
-  std::vector<double> logo_regrets, bo_regrets;
-  constexpr int step = 10;
-  for (int i = 0; i < 360; i += step) {
-    s_angle = (double)i;
-    double logo = eval_logo_final();
-    logo_regrets.push_back(logo);
-
-    double bo = eval_good_bo_final();
-    bo_regrets.push_back(bo);
-  }
-
-  output_angle_regrets(logo_regrets, "rot_logo.csv");
-  output_angle_regrets(bo_regrets, "rot_bo.csv");
-
 }
 
 int main() {

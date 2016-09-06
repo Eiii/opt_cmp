@@ -1,14 +1,18 @@
-#include "bopt.h"
 #include "common.h"
+#include "bopt.h"
 
 #include <iostream>
 #include <vector>
+
+#define STR_(x) #x
+#define STR(x) STR_(x)
 
 using std::cout;
 using std::endl;
 using std::vector;
 
-constexpr int num_it = 5;
+constexpr int num_it = 10;
+constexpr int init_samples = 2;
 
 bopt_params default_params(int seed)
 {
@@ -36,7 +40,7 @@ bopt_params default_params(int seed)
 
   //TODO this is just so that the initial observations are always the same
   params.random_seed = seed; 
-  params.n_init_samples = 2;
+  params.n_init_samples = init_samples;
   params.n_iterations = TOTAL_SAMPLES - params.n_init_samples;
   params.init_method = 3; //Uniform samples
   params.n_iter_relearn = 100; //TODO ???
@@ -73,10 +77,10 @@ bopt_params good_params(int seed)
 
   //TODO this is just so that the initial observations are always the same
   params.random_seed = seed; 
-  params.n_init_samples = 2;
+  params.n_init_samples = init_samples;
   params.n_iterations = TOTAL_SAMPLES-params.n_init_samples;
   params.init_method = 3; //Uniform samples
-  params.n_iter_relearn = 10; //TODO ???
+  params.n_iter_relearn = 50; //TODO ???
   params.force_jump = 0; //Don't jump
 
   params.verbose_level = -1;
@@ -86,13 +90,20 @@ bopt_params good_params(int seed)
 
 double fn_value(const vectord& result) 
 {
-  return FN_MAX - (-sample(result));
+  double diff = FN_MAX - (-sample(result));
+  if (FN_MAX == 0.0) {
+    return diff;
+  } else {
+    return diff / fabs(FN_MAX);
+  }
 }
 
 double sample(const boost::numeric::ublas::vector<double> &query)
 {
-  double pt[2];
-  pt[0] = query[0]; pt[1] = query[1];
+  double pt[FN_DIM];
+  for (int i = 0; i < FN_DIM; i++) {
+    pt[i] = query[i];
+  }
   return -FN(pt);
 }
 
@@ -105,15 +116,17 @@ void display_result(size_t step, const vectord& result, std::ostream& os)
 
 void display_avg_result(const vector<vector<double>>& rs, std::ostream& os)
 {
+  os << STR(FN) << ",BO1" << endl;
   for (size_t i = 0; i < rs[0].size(); i++) {
-    os << i << "\t";
     double avg = 0.0;
     for (size_t j = 0; j < num_it; j++) {
       avg += rs[j][i];
     }
     avg /= (double)num_it;
-    os << avg << endl;
+    os << avg;
+    if (i+1 < rs[0].size()) os << ",";
   }
+  os << endl;
 }
 
 void eval(std::function<bopt_params (int)> fn, std::ofstream& of)
@@ -125,6 +138,9 @@ void eval(std::function<bopt_params (int)> fn, std::ofstream& of)
     BOModel model(params); 
     model.initializeOptimization();
     regrets[x].clear();
+    for (size_t i = 0; i < init_samples; i++) {
+      regrets[x].push_back(std::numeric_limits<double>::quiet_NaN());
+    }
     for (size_t i = 0; i < params.n_iterations; i++) {
       model.stepOptimization();
       auto result = model.getFinalResult();
