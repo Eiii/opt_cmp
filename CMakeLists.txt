@@ -12,11 +12,23 @@ project( ${PROJ_NAME} )
 add_subdirectory( bayesopt )
 set( BAYESOPT_INCLUDES "bayesopt/include" "bayesopt/utils" )
 
-set( CMAKE_CXX_FLAGS "-std=c++14 -Wall" )
+add_subdirectory( cpplogo )
+set( CPPLOGO_INCLUDES "cpplogo/include" )
+
+set( CMAKE_CXX_FLAGS "-std=c++14 -Wall -pthread" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3" )
 set( CMAKE_CXX_FLAGS_DEBUG "-gdwarf-3" )
 
+#TODO: Boost stuff? - for cpplogo
+set( Boost_USE_STATIC_LIBS ON )
+set( Boost_USE_MULTITHREADED ON )
+set( Boost_USE_STATIC_RUNTIME OFF )
+set( BOOST_ROOT "/scratch/merriler/local" )
+set( BOOST_LIBRARYDIR "/scratch/merriler/local/lib" )
+find_package( Boost 1.61.0 COMPONENTS log REQUIRED )
+include_directories( SYSTEM ${Boost_INCLUDE_DIR} )
+
 include_directories( ${PROJ_INCLUDES} )
-include_directories( SYSTEM  ${BAYESOPT_INCLUDES} )
+include_directories( SYSTEM  ${BAYESOPT_INCLUDES} ${CPPLOGO_INCLUDES} )
 add_executable( ${PROJ_EXE} ${PROJ_SOURCES} )
-target_link_libraries( ${PROJ_EXE} bayesopt )
+target_link_libraries( ${PROJ_EXE} bayesopt cpplogo ${Boost_LIBRARIES} )
