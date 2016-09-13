@@ -39,7 +39,7 @@ bopt_params good_params(int seed, int total_samples)
   params.n_init_samples = init_samples;
   params.n_iterations = total_samples-params.n_init_samples;
   params.init_method = 3; //Uniform samples
-  params.n_iter_relearn = 25; //TODO ???
+  params.n_iter_relearn = 50; //TODO ???
   params.force_jump = 0; //Don't jump
 
   params.verbose_level = -1;
