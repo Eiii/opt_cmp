@@ -6,6 +6,7 @@
 
 #include "functions.h"
 #include "boharness.h"
+#include "logoharness.h"
 
 constexpr int SAMPLES = 25;
 constexpr int MAIN_SEED = 1337;
@@ -26,6 +27,12 @@ void comp()
   std::ofstream of("bo.csv");
   for (const auto& fn : functions) {
     BOHarness harness(*fn, MAIN_SEED);
+    std::cout << harness.name() << " / " << fn->name << std::endl;
+    harness.Evaluate(SAMPLES, 2);
+    harness.OutputResult(&of);
+  }
+  for (const auto& fn : functions) {
+    LOGOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, 2);
     harness.OutputResult(&of);
