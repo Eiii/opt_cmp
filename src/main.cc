@@ -4,10 +4,11 @@
 #include <fstream>
 #include <vector>
 
-#include "bopt.h"
 #include "functions.h"
+#include "boharness.h"
 
-constexpr int samples = 500;
+constexpr int SAMPLES = 25;
+constexpr int MAIN_SEED = 1337;
 
 std::vector<const Function*> functions = { 
   &f_sin_1, &f_sin_2,
@@ -24,8 +25,10 @@ void comp()
 {
   std::ofstream of("bo.csv");
   for (const auto& fn : functions) {
-    std::cout << fn->name << std::endl;
-    eval_good_bo(*fn, samples, of);
+    BOHarness harness(*fn, MAIN_SEED);
+    std::cout << harness.name() << " / " << fn->name << std::endl;
+    harness.Evaluate(SAMPLES, 2);
+    harness.OutputResult(&of);
   }
   of.close();
 }

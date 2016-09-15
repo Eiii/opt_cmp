@@ -1,9 +1,7 @@
 #pragma once
 
-#include "functions.h"
+#include "types.h"
 #include "bayesopt.hpp"
-
-#include <fstream>
 
 class BOModel : public bayesopt::ContinuousModel
 {
@@ -28,5 +26,3 @@ class BOModel : public bayesopt::ContinuousModel
     const Function& fn_;
 
 };
-
-void eval_good_bo(const Function& fn, int samples, std::ofstream& os);
