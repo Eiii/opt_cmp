@@ -23,7 +23,7 @@ def all_fns(data):
 def list_avg(l):
   return [sum(x)/len(x) for x in zip(*l)]
 
-def calc_std(data):
+def list_std(data):
   def isinf(f):
     return f == float("Inf")
   def replace(f):
@@ -38,35 +38,40 @@ def calc_std(data):
 def data_for_fn(goal_fn, data):
   return {alg: v for ((fn, alg), v) in data.iteritems() if fn == goal_fn}
 
+def data_filter(data, goal_fn, dtype):
+  return {alg: v[dtype] for ((fn, alg), v) in data.iteritems() if fn == goal_fn and dtype in v}
+
 def main():
   data = load_data("bo.csv")
+  pass
+
+def output_all_plots():
+  use_log_scale = False
+  ymax_dict = {'rosenbrock_2' : 4 }
+  data = load_data("bo.csv")
+
   for fn in all_fns(data):
-    d = data_for_fn(fn, data)
-    for k, v in d.iteritems():
-      print k, list_avg(v[REGRETS])
-      if k == "LOGO":
-        print k, list_avg(v[WS])
+    regrets = data_filter(data, fn, REGRETS)
+    plt.clf()
+    plot_regrets(fn, regrets)
+    out_name = fn+'_regrets.png'
+    plt.savefig(out_name, bbox_inches='tight')
 
-if __name__ == "__main__":
-  main()
-  sys.exit()
+  for fn in all_fns(data):
+    ws = data_filter(data, fn, WS)
+    plt.clf()
+    plot_regrets(fn, ws)
+    out_name = fn+'_ws.png'
+    plt.savefig(out_name, bbox_inches='tight')
 
-###
-
-use_log_scale = False
-data = load_data("output.csv")
-data = load_data("bo.csv", data)
-ymax_dict = {'rosenbrock_2' : 4 }
-
-#Plot data
-for fn in all_fns(data):
+def plot_regrets(fn, regrets, log_scale=False, ymax_dict={}):
   ax = plt.gca()
-  lcl_data = data_for_fn(fn, data)
-  for name, regrets, errs in lcl_data:
-    x = range(len(regrets))
-    err_top = [a+b for a,b in zip(regrets, errs)]
-    err_bot = [a-b for a,b in zip(regrets, errs)]
-    ax.plot(x, regrets, label=name)
+  lcl_data = {k: (list_avg(v), list_std(v)) for (k, v) in regrets.iteritems()}
+  for (name, (reg, err)) in lcl_data.iteritems():
+    x = range(len(reg))
+    err_top = [a+b for a,b in zip(reg, err)]
+    err_bot = [a-b for a,b in zip(reg, err)]
+    ax.plot(x, reg, label=name)
     last_col = ax.lines[-1].get_color()
     ax.fill_between(x, err_bot, err_top, alpha=0.3, color=last_col)
   plt.legend()
@@ -74,7 +79,7 @@ for fn in all_fns(data):
   plt.xlabel('Function evaluations')
   plt.ylabel('Regret')
 
-  if use_log_scale:
+  if log_scale:
     plt.yscale('log', nonposy='clip')
   else:
     _, ymax = plt.ylim()
@@ -82,6 +87,20 @@ for fn in all_fns(data):
       ymax = ymax_dict[fn]
     plt.ylim((-0.1,ymax))
 
-  out_name = fn+'.png'
-  plt.savefig(out_name, bbox_inches='tight')
-  plt.clf()
+def plot_ws(fn, ws):
+  ax = plt.gca()
+  lcl_data = {k: (list_avg(v), list_std(v)) for (k, v) in ws.iteritems()}
+  for (name, (reg, err)) in lcl_data.iteritems():
+    x = range(len(reg))
+    err_top = [a+b for a,b in zip(reg, err)]
+    err_bot = [a-b for a,b in zip(reg, err)]
+    ax.plot(x, reg, label=name)
+    last_col = ax.lines[-1].get_color()
+    ax.fill_between(x, err_bot, err_top, alpha=0.3, color=last_col)
+  plt.legend()
+  plt.title(fn)
+  plt.xlabel('Function evaluations')
+  plt.ylabel('W value')
+
+if __name__ == "__main__":
+  output_all_plots()

@@ -10,7 +10,7 @@
 
 #include "cpplogo/logging.h" //TODO: This is just so we can disable logging!
 
-constexpr int SAMPLES = 25;
+constexpr int SAMPLES = 100;
 constexpr int MAIN_SEED = 1337;
 
 std::vector<const Function*> functions = { 
@@ -31,16 +31,19 @@ std::vector<const Function*> functions = {
 void comp() 
 {
   std::ofstream of("bo.csv");
+  /*
   for (const auto& fn : functions) {
     BOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, 2);
     harness.OutputResult(&of);
   }
+  */
   for (const auto& fn : functions) {
+    constexpr int NUM_ITERATIONS = 500;
     LOGOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, 2);
+    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&of);
   }
   of.close();
