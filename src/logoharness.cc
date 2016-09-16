@@ -36,7 +36,7 @@ double h_max(const logo::LOGO& logo)
 /*********************************************************************
 * LOGOHarness Class
 *********************************************************************/
-constexpr int NUM_SECTIONS = 1;
+constexpr int NUM_SECTIONS = 2;
 
 LOGOHarness::LOGOHarness(const Function& fn, int seed) :
     Harness("LOGO", fn, seed), all_regrets_(), setting_(s_logo)
@@ -54,11 +54,13 @@ void LOGOHarness::OutputResult(std::ofstream* of)
 {
   *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
   OutputRegrets(of);
+  OutputWs(of);
 } /* OutputResult() */
 
 void LOGOHarness::SingleRun(int run_seed, int max_samples)
 {
   std::vector<std::tuple<int, double>> run_regrets;
+  std::vector<std::tuple<int, double>> run_ws;
 
   auto options = BuildOptions(s_logo, max_samples, run_seed);
   logo::LOGO logo(options);
@@ -67,11 +69,14 @@ void LOGOHarness::SingleRun(int run_seed, int max_samples)
     logo.Step();
     int samples = logo.library().NumSamples();
     double regret = Regret(logo);
+    double w = static_cast<double>(logo.w());
     run_regrets.push_back(std::make_pair(samples, regret));
+    run_ws.push_back(std::make_pair(samples, w));
   }
 
   //Put this run's regrets into the list of all regrets
-  all_regrets_.push_back(DenseRegrets(run_regrets, max_samples));
+  all_regrets_.push_back(DenseValues(run_regrets, max_samples));
+  all_ws_.push_back(DenseValues(run_ws, max_samples));
 }
 
 double LOGOHarness::Regret(const logo::LOGO& logo) const
@@ -85,6 +90,12 @@ void LOGOHarness::OutputRegrets(std::ofstream* of) const
   *of << "REGRETS," << all_regrets_.size() << std::endl;
   output_csv(all_regrets_, of);
 } /* OutputRegrets() */
+
+void LOGOHarness::OutputWs(std::ofstream* of) const
+{
+  *of << "WS," << all_ws_.size() << std::endl;
+  output_csv(all_ws_, of);
+} /* OutputWs() */
 
 logo::Options LOGOHarness::BuildOptions(const Settings& opt, int max, int seed) const
 {
@@ -103,7 +114,7 @@ logo::Options LOGOHarness::BuildOptions(const Settings& opt, int max, int seed) 
   return o;
 } /* BuildOptions() */
 
-std::vector<double> LOGOHarness::DenseRegrets(std::vector<std::tuple<int, double>> regrets, int max_samples)
+std::vector<double> LOGOHarness::DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples)
 {
   std::vector<double> result(max_samples);
   auto reg_entry = regrets.begin();

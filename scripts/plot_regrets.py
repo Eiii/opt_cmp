@@ -10,6 +10,7 @@ from parse import load_data
 
 ### Globals?
 REGRETS = "REGRETS"
+WS = "WS"
 
 ###
 
@@ -43,6 +44,8 @@ def main():
     d = data_for_fn(fn, data)
     for k, v in d.iteritems():
       print k, list_avg(v[REGRETS])
+      if k == "LOGO":
+        print k, list_avg(v[WS])
 
 if __name__ == "__main__":
   main()
