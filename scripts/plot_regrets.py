@@ -6,7 +6,9 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import functools
 from parse import load_data
+from math import isnan
 
 ### Globals?
 REGRETS = "REGRETS"
@@ -35,34 +37,21 @@ def list_std(data):
   results = [np.std(x) for x in z]
   return results
 
+def list_slope(width, l):
+  slope = [float('nan')]*width
+  for i in range(len(l))[width:-width]:
+    start_val = l[i-width]
+    end_val = l[i+width]
+    s = -(end_val-start_val)/width
+    slope.append(s)
+  slope += [float('nan')]*width
+  return slope
+
 def data_for_fn(goal_fn, data):
   return {alg: v for ((fn, alg), v) in data.iteritems() if fn == goal_fn}
 
 def data_filter(data, goal_fn, dtype):
   return {alg: v[dtype] for ((fn, alg), v) in data.iteritems() if fn == goal_fn and dtype in v}
-
-def main():
-  data = load_data("bo.csv")
-  pass
-
-def output_all_plots():
-  use_log_scale = False
-  ymax_dict = {'rosenbrock_2' : 4 }
-  data = load_data("bo.csv")
-
-  for fn in all_fns(data):
-    regrets = data_filter(data, fn, REGRETS)
-    plt.clf()
-    plot_regrets(fn, regrets)
-    out_name = fn+'_regrets.png'
-    plt.savefig(out_name, bbox_inches='tight')
-
-  for fn in all_fns(data):
-    ws = data_filter(data, fn, WS)
-    plt.clf()
-    plot_regrets(fn, ws)
-    out_name = fn+'_ws.png'
-    plt.savefig(out_name, bbox_inches='tight')
 
 def plot_regrets(fn, regrets, log_scale=False, ymax_dict={}):
   ax = plt.gca()
@@ -87,6 +76,21 @@ def plot_regrets(fn, regrets, log_scale=False, ymax_dict={}):
       ymax = ymax_dict[fn]
     plt.ylim((-0.1,ymax))
 
+def pair_slope_w(width, data):
+  def remove_nan(l):
+    temp = zip(*l)
+    temp = filter(lambda x: not any(map(isnan, x)), temp)
+    return zip(*temp)
+  slopes = map(functools.partial(list_slope, width), data[REGRETS])
+  z = map(remove_nan, zip(slopes, data[WS]))
+  #Remove any entries with NaN
+  return z
+
+def reduce_sublists(d):
+  temp = zip(*d)
+  temp = map(lambda l: reduce(lambda x, y: x+y, l), temp)
+  return temp
+
 def plot_ws(fn, ws):
   ax = plt.gca()
   lcl_data = {k: (list_avg(v), list_std(v)) for (k, v) in ws.iteritems()}
@@ -102,5 +106,52 @@ def plot_ws(fn, ws):
   plt.xlabel('Function evaluations')
   plt.ylabel('W value')
 
+def plot_scatter(fn, pair, log_scale=False):
+  slopes, ws = pair
+  if log_scale:
+    plt.xscale('log')
+  plt.scatter(slopes, ws)
+  plt.title(fn)
+  plt.xlabel('Regret Improvement')
+  plt.ylabel('W')
+
+
+def output_all_plots():
+  use_log_scale = False
+  ymax_dict = {'rosenbrock_2' : 4 }
+  data = load_data("bo.csv")
+
+  for fn in all_fns(data):
+    regrets = data_filter(data, fn, REGRETS)
+    plt.clf()
+    plot_regrets(fn, regrets)
+    out_name = fn+'_regrets.png'
+    plt.savefig(out_name, bbox_inches='tight')
+
+  for fn in all_fns(data):
+    ws = data_filter(data, fn, WS)
+    plt.clf()
+    plot_regrets(fn, ws)
+    out_name = fn+'_ws.png'
+    plt.savefig(out_name, bbox_inches='tight')
+
+  for fn in all_fns(data):
+    d = data_for_fn('hartman_3', data)['LOGO']
+    slope_ws = reduce_sublists(pair_slope_w(2, d))
+    plt.clf()
+    plot_scatter(fn, slope_ws, True)
+    out_name = fn+'_scatter.png'
+    plt.savefig(out_name, bbox_inches='tight')
+
+
+def main():
+  data = load_data("bo.csv")
+  d = data_for_fn('hartman_3', data)['LOGO']
+  d = pair_slope_w(2, d)
+  d = reduce_sublists(d)
+  print map(len, d) 
+
+
 if __name__ == "__main__":
+  #main()
   output_all_plots()
