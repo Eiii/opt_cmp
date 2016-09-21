@@ -36,8 +36,6 @@ double h_max(const logo::LOGO& logo)
 /*********************************************************************
 * LOGOHarness Class
 *********************************************************************/
-constexpr int NUM_SECTIONS = 2;
-
 LOGOHarness::LOGOHarness(const Function& fn, int seed) :
     Harness("LOGO", fn, seed), all_regrets_(), setting_(s_logo)
 {
@@ -52,6 +50,7 @@ void LOGOHarness::Evaluate(int max_samples, int iterations)
 
 void LOGOHarness::OutputResult(std::ofstream* of)
 {
+  constexpr int NUM_SECTIONS = 2;
   *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
   OutputRegrets(of);
   OutputWs(of);

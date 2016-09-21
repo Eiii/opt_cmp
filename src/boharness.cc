@@ -3,8 +3,7 @@
 #include "common.h"
 
 constexpr int INITIAL_SAMPLES = 2;
-constexpr int IT_RELEARN = 50;
-constexpr int NUM_SECTIONS = 1;
+constexpr int IT_RELEARN = 15;
 
 BOHarness::BOHarness(const Function& fn, int seed) :
     Harness("BO1", fn, seed), all_regrets_()
@@ -20,13 +19,16 @@ void BOHarness::Evaluate(int max_samples, int iterations)
 
 void BOHarness::OutputResult(std::ofstream* of)
 {
+  constexpr int NUM_SECTIONS = 2;
   *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
   OutputRegrets(of);
+  OutputDists(of);
 } /* OutputResult() */
 
 void BOHarness::SingleRun(int run_seed, int iterations)
 {
   std::vector<double> run_regrets;
+  std::vector<vectord> run_points;
   bopt_params params = CreateParameters(run_seed, iterations);
   BOModel model(params, fn_); 
   model.initializeOptimization();
@@ -41,10 +43,12 @@ void BOHarness::SingleRun(int run_seed, int iterations)
     auto result = model.getFinalResult();
     auto regret = Regret(result);
     run_regrets.push_back(regret);
+    run_points.push_back(result);
   }
 
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(run_regrets);
+  all_dists_.push_back(CalcDist(run_points));
 }
 
 bopt_params BOHarness::CreateParameters(int seed, int iterations)
@@ -89,8 +93,74 @@ double BOHarness::Regret(const vectord& point)
   return diff;
 } /* Regret() */
 
+//Helper functions for CalcDist
+namespace {
+double sqr_distance(const vectord& a, const vectord& b) 
+{
+  assert(a.size() == b.size());
+  double total = 0.0;
+  for (size_t i = 0; i < a.size(); i++) {
+    double diff = a(i)-b(i);
+    total += diff*diff;
+  }
+  return total;
+}
+
+double distance(const vectord& a, const vectord& b) 
+{
+  return sqrt(sqr_distance(a, b));
+}
+
+using vec_it = std::vector<vectord>::const_iterator;
+vectord closest_point(vec_it begin, vec_it end)
+{
+  assert(begin != end);
+  vectord closest_point;
+  double closest_sqr = std::numeric_limits<double>::infinity();
+  for (auto it = begin; it != end; ++it) {
+    double sdist = sqr_distance(*end, *it);
+    if (sdist < closest_sqr) {
+      closest_point = *it;
+      closest_sqr = sdist;
+    }
+  }
+  return closest_point;
+}
+
+double closest_point_dist(vec_it begin, vec_it end)
+{
+  if (begin == end) return std::numeric_limits<double>::quiet_NaN();
+  vectord point = closest_point(begin, end);
+  return distance(point, *end);
+}
+
+}
+
+std::vector<double> BOHarness::CalcDist(const std::vector<vectord>& points)
+{
+  std::vector<double> dists;
+
+  //No distance associated with the initial samples-- just put in NaN
+  for (size_t i = 0; i < INITIAL_SAMPLES; i++) {
+    dists.push_back(std::numeric_limits<double>::quiet_NaN());
+  }
+
+  for (auto it = points.begin(); it != points.end(); ++it) {
+    double dist = closest_point_dist(points.begin(), it);
+    dists.push_back(dist);
+  }
+  return dists;
+
+} /* CalcDist() */
+
 void BOHarness::OutputRegrets(std::ofstream* of)
 {
   *of << "REGRETS," << all_regrets_.size() << std::endl;
   output_csv(all_regrets_, of);
 } /* OutputRegrets() */
+
+void BOHarness::OutputDists(std::ofstream* of)
+{
+  *of << "DISTS," << all_dists_.size() << std::endl;
+  output_csv(all_dists_, of);
+} /* OutputDists() */

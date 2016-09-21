@@ -13,6 +13,7 @@ from math import isnan
 ### Globals?
 REGRETS = "REGRETS"
 WS = "WS"
+DISTS = "DISTS"
 
 ###
 
@@ -53,7 +54,7 @@ def data_for_fn(goal_fn, data):
 def data_filter(data, goal_fn, dtype):
   return {alg: v[dtype] for ((fn, alg), v) in data.iteritems() if fn == goal_fn and dtype in v}
 
-def plot_regrets(fn, regrets, log_scale=False, ymax_dict={}):
+def plot_vals_err(fn, regrets, ylabel="Regret", log_scale=False, ymax_dict={}):
   ax = plt.gca()
   lcl_data = {k: (list_avg(v), list_std(v)) for (k, v) in regrets.iteritems()}
   for (name, (reg, err)) in lcl_data.iteritems():
@@ -66,7 +67,7 @@ def plot_regrets(fn, regrets, log_scale=False, ymax_dict={}):
   plt.legend()
   plt.title(fn)
   plt.xlabel('Function evaluations')
-  plt.ylabel('Regret')
+  plt.ylabel(ylabel)
 
   if log_scale:
     plt.yscale('log', nonposy='clip')
@@ -76,13 +77,13 @@ def plot_regrets(fn, regrets, log_scale=False, ymax_dict={}):
       ymax = ymax_dict[fn]
     plt.ylim((-0.1,ymax))
 
-def pair_slope_w(width, data):
+def pair_slope_val(width, data, key):
   def remove_nan(l):
     temp = zip(*l)
     temp = filter(lambda x: not any(map(isnan, x)), temp)
     return zip(*temp)
   slopes = map(functools.partial(list_slope, width), data[REGRETS])
-  z = map(remove_nan, zip(slopes, data[WS]))
+  z = map(remove_nan, zip(slopes, data[key]))
   #Remove any entries with NaN
   return z
 
@@ -106,15 +107,14 @@ def plot_ws(fn, ws):
   plt.xlabel('Function evaluations')
   plt.ylabel('W value')
 
-def plot_scatter(fn, pair, log_scale=False):
+def plot_scatter(fn, pair, ylabel, alpha=0.1, log_scale=True):
   slopes, ws = pair
   if log_scale:
     plt.xscale('log')
-  plt.scatter(slopes, ws)
+  plt.scatter(slopes, ws, s=40, alpha=alpha, edgecolors='none')
   plt.title(fn)
   plt.xlabel('Regret Improvement')
-  plt.ylabel('W')
-
+  plt.ylabel(ylabel)
 
 def output_all_plots():
   use_log_scale = False
@@ -124,32 +124,46 @@ def output_all_plots():
   for fn in all_fns(data):
     regrets = data_filter(data, fn, REGRETS)
     plt.clf()
-    plot_regrets(fn, regrets)
+    plot_vals_err(fn, regrets)
     out_name = fn+'_regrets.png'
     plt.savefig(out_name, bbox_inches='tight')
 
   for fn in all_fns(data):
     ws = data_filter(data, fn, WS)
     plt.clf()
-    plot_regrets(fn, ws)
+    plot_vals_err(fn, ws, ylabel="W")
     out_name = fn+'_ws.png'
     plt.savefig(out_name, bbox_inches='tight')
 
   for fn in all_fns(data):
-    d = data_for_fn('hartman_3', data)['LOGO']
-    slope_ws = reduce_sublists(pair_slope_w(2, d))
+    dists = data_filter(data, fn, DISTS)
     plt.clf()
-    plot_scatter(fn, slope_ws, True)
-    out_name = fn+'_scatter.png'
+    plot_vals_err(fn, dists, ylabel="Min. Distance")
+    out_name = fn+'_dists.png'
+    plt.savefig(out_name, bbox_inches='tight')
+
+  for fn in all_fns(data):
+    d = data_for_fn(fn, data)['LOGO']
+    slope_ws = reduce_sublists(pair_slope_val(1, d, WS))
+    plt.clf()
+    plot_scatter(fn, slope_ws, 'W', alpha=0.05)
+    out_name = fn+'_ws_scatter.png'
+    plt.savefig(out_name, bbox_inches='tight')
+
+  for fn in all_fns(data):
+    d = data_for_fn(fn, data)['BO1']
+    slope_dists = reduce_sublists(pair_slope_val(1, d, DISTS))
+    plt.clf()
+    plot_scatter(fn, slope_dists, 'Min. Distance')
+    out_name = fn+'_dists_scatter.png'
     plt.savefig(out_name, bbox_inches='tight')
 
 
 def main():
   data = load_data("bo.csv")
-  d = data_for_fn('hartman_3', data)['LOGO']
-  d = pair_slope_w(2, d)
-  d = reduce_sublists(d)
-  print map(len, d) 
+  d = data_for_fn('hartman_3', data)['BO1']
+  d = reduce_sublists(pair_slope_val(2, d, DISTS))
+  print map(len, d)
 
 
 if __name__ == "__main__":
