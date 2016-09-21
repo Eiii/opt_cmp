@@ -122,6 +122,7 @@ def plot_singles(fn, top, bot):
   plt.yscale('log', nonposy='clip')
   plt.plot(xs, top)
   plt.subplot(2,1,2)
+  plt.yscale('log', nonposy='clip')
   plt.plot(xs, bot)
   plt.xlabel('Function Evaluations')
 
@@ -180,7 +181,7 @@ def output_singles():
         print idx
       plt.clf()
       plot_singles(fn, top, bot)
-      out_name = fn+'_single_'+str(idx+1)+'.png'
+      out_name = fn+'_single_'+str(idx)+'.png'
       plt.savefig(out_name, bbox_inches='tight')
 
 def main():

@@ -40,10 +40,11 @@ void BOHarness::SingleRun(int run_seed, int iterations)
 
   for (size_t i = 0; i < params.n_iterations; i++) {
     model.stepOptimization();
+    auto last = model.lastPoint();
+    run_points.push_back(last);
     auto result = model.getFinalResult();
     auto regret = Regret(result);
     run_regrets.push_back(regret);
-    run_points.push_back(result);
   }
 
   //Put this run's regrets into the list of all regrets
@@ -149,8 +150,8 @@ std::vector<double> BOHarness::CalcDist(const std::vector<vectord>& points)
     double dist = closest_point_dist(points.begin(), it);
     dists.push_back(dist);
   }
-  return dists;
 
+  return dists;
 } /* CalcDist() */
 
 void BOHarness::OutputRegrets(std::ofstream* of)
