@@ -116,6 +116,15 @@ def plot_scatter(fn, pair, ylabel, alpha=0.1, log_scale=True):
   plt.xlabel('Regret Improvement')
   plt.ylabel(ylabel)
 
+def plot_singles(fn, top, bot):
+  xs = range(len(top))
+  plt.subplot(2,1,1)
+  plt.yscale('log', nonposy='clip')
+  plt.plot(xs, top)
+  plt.subplot(2,1,2)
+  plt.plot(xs, bot)
+  plt.xlabel('Function Evaluations')
+
 def output_all_plots():
   use_log_scale = False
   ymax_dict = {'rosenbrock_2' : 4 }
@@ -158,6 +167,21 @@ def output_all_plots():
     out_name = fn+'_dists_scatter.png'
     plt.savefig(out_name, bbox_inches='tight')
 
+def output_singles():
+  max_out = 20
+  data = load_data("bo.csv")
+  for fn in all_fns(data):
+    print fn
+    d = data_for_fn(fn, data)['BO1']
+    pairs = zip(d[REGRETS], d[DISTS])
+    for idx, (top, bot) in enumerate(pairs[:max_out]):
+      idx += 1
+      if idx % 10 == 0:
+        print idx
+      plt.clf()
+      plot_singles(fn, top, bot)
+      out_name = fn+'_single_'+str(idx+1)+'.png'
+      plt.savefig(out_name, bbox_inches='tight')
 
 def main():
   data = load_data("bo.csv")
@@ -168,4 +192,5 @@ def main():
 
 if __name__ == "__main__":
   #main()
-  output_all_plots()
+  #output_all_plots()
+  output_singles()
