@@ -21,7 +21,8 @@ class LOGOHarness : public Harness
 
   public:
     void Evaluate(int max_samples, int iterations) override;
-    void OutputResult(std::ofstream* of) override;
+    void OutputData(std::ofstream* of) override;
+    void OutputHeader(std::ofstream* of) override;
 
   protected:
     void SingleRun(int run_seed, int max_samples);

@@ -17,13 +17,17 @@ void BOHarness::Evaluate(int max_samples, int iterations)
   }
 } /* Evaluate() */
 
-void BOHarness::OutputResult(std::ofstream* of)
+void BOHarness::OutputData(std::ofstream* of)
+{
+  OutputRegrets(of);
+  OutputDists(of);
+} /* OutputData() */
+
+void BOHarness::OutputHeader(std::ofstream* of)
 {
   constexpr int NUM_SECTIONS = 2;
   *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
-  OutputRegrets(of);
-  OutputDists(of);
-} /* OutputResult() */
+} /* OutputData() */
 
 void BOHarness::SingleRun(int run_seed, int iterations)
 {

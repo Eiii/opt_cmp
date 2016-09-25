@@ -48,13 +48,17 @@ void LOGOHarness::Evaluate(int max_samples, int iterations)
   }
 } /* Evaluate() */
 
-void LOGOHarness::OutputResult(std::ofstream* of)
+void LOGOHarness::OutputData(std::ofstream* of)
+{
+  OutputRegrets(of);
+  OutputWs(of);
+} /* OutputData() */
+
+void LOGOHarness::OutputHeader(std::ofstream* of)
 {
   constexpr int NUM_SECTIONS = 2;
   *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
-  OutputRegrets(of);
-  OutputWs(of);
-} /* OutputResult() */
+} /* OutputData() */
 
 void LOGOHarness::SingleRun(int run_seed, int max_samples)
 {

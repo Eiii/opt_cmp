@@ -12,7 +12,9 @@ class Harness
 
   public:
     virtual void Evaluate(int max_samples, int iterations) = 0;
-    virtual void OutputResult(std::ofstream* of) = 0;
+    void OutputResult(std::ofstream* of);
+    virtual void OutputData(std::ofstream* of) = 0;
+    virtual void OutputHeader(std::ofstream* of) = 0;
 
   public:
     const std::string& name() const { return name_; } 
