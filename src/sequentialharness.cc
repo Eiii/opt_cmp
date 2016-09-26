@@ -15,7 +15,8 @@ SequentialHarness::SequentialHarness(std::string name, const Function& fn,
 void SequentialHarness::Evaluate(int max_samples, int iterations)
 {
   for (int i = 0; i < iterations; i++) {
-    SingleRun(i, max_samples);
+    RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
+    SingleRun(rand_seed(), max_samples);
   }
 } /* Evaluate() */
 
