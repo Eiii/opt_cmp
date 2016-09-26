@@ -1,13 +1,18 @@
 #pragma once
 
 #include "harness.h"
-
 #include "bayesopt.hpp"
+#include <tuple>
 
 class BOHarness : public Harness
 {
   public:
-    BOHarness(const Function& fn, int seed);
+    //Criteria, Kernel, Surrogate, Relearn #, Initial samples
+    using BOParams = std::tuple<std::string, std::string, std::string, int, int>;
+  public:
+    BOHarness(const Function& fn, int seed, 
+              BOParams params = BOParams("cEI", "kSEISO", "sGaussianProcessML", 15, 2)
+             );
     virtual ~BOHarness() = default;
 
   public:
@@ -24,6 +29,11 @@ class BOHarness : public Harness
     void OutputDists(std::ofstream* of);
 
   protected:
+    const std::string criteria_;
+    const std::string kernel_; 
+    const std::string surrogate_; 
+    const int it_relearn_;
+    const int init_samples_;
     std::vector<std::vector<double>> all_regrets_;
     std::vector<std::vector<double>> all_dists_;
 };

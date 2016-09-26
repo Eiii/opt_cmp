@@ -2,6 +2,12 @@
 
 import csv
 
+def next_line(reader):
+  line = None
+  while line == None or line[0] == '#':
+    line = reader.next()
+  return line
+
 def load_data(fname, prev_results=None):
   if prev_results:
     results = prev_results
@@ -11,7 +17,7 @@ def load_data(fname, prev_results=None):
     reader = csv.reader(f)
     try:
       while True:
-        fn, name, num_sections = reader.next()
+        fn, name, num_sections = next_line(reader)
         data = {}
         for _ in range(int(num_sections)):
           load_section(data, reader)
@@ -21,10 +27,11 @@ def load_data(fname, prev_results=None):
   return results
 
 def load_section(data, reader):
-  name, count = reader.next()
+  name, count = next_line(reader)
   section_data = []
   for _ in range(int(count)):
-    section_data.append(map(float, reader.next()))
+    line = next_line(reader);
+    section_data.append(map(float, line))
   data[name] = section_data
 
 

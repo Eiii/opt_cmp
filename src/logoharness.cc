@@ -58,7 +58,13 @@ void LOGOHarness::OutputHeader(std::ofstream* of)
 {
   constexpr int NUM_SECTIONS = 2;
   *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
-} /* OutputData() */
+
+  //Output extra info
+  *of << "# ";
+  *of << "v1,";
+  *of << "seed:" << seed_;
+  *of << std::endl;
+} /* OutputHeader() */
 
 void LOGOHarness::SingleRun(int run_seed, int max_samples)
 {

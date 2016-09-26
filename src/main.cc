@@ -76,12 +76,36 @@ using ArgsResult = std::tuple<HarnessPtr, int, int>;
 HarnessPtr create_bo(int seed, const Function& fn, 
                                    ArgDeque* args) 
 {
-  if (args->size() != 0) {
+  if (args->size() < 5) {
     throw std::invalid_argument("Bad number of algorithm arguments.");
   }
+
+  //Criteria
+  std::string crit = args->front();
+  args->pop_front();
+
+  //Kernel
+  std::string kernel = args->front();
+  args->pop_front();
+
+  //Surrogate
+  std::string surr = args->front();
+  args->pop_front();
+
+  //Relearn #
+  int relearn = std::stoi(args->front());
+  args->pop_front();
+
+  //Initial samples
+  int init = std::stoi(args->front());
+  args->pop_front();
+
+  //Parameters
+  auto params = BOHarness::BOParams(crit, kernel, surr, relearn, init);
+
   std::cout << "BO" << std::endl;
   std::unique_ptr<Harness> bo;
-  bo.reset(new BOHarness(fn, seed));
+  bo.reset(new BOHarness(fn, seed, params));
   return bo;
 }
 

@@ -24,6 +24,7 @@ class Harness
 
   protected:
     RandomEngine rng_;
+    const int seed_;
     const std::string name_;
     const Function& fn_;
 };
