@@ -1,10 +1,11 @@
 #pragma once
 
-#include "harness.h"
+#include "sequentialharness.h"
 #include "bayesopt.hpp"
+#include "bopt.h"
 #include <tuple>
 
-class BOHarness : public Harness
+class BOHarness : public SequentialHarness
 {
   public:
     //Criteria, Kernel, Surrogate, Relearn #, Initial samples
@@ -15,25 +16,19 @@ class BOHarness : public Harness
              );
     virtual ~BOHarness() = default;
 
-  public:
-    void Evaluate(int max_samples, int iterations) override;
-    void OutputData(std::ofstream* of) override;
-    void OutputHeader(std::ofstream* of) override;
+  protected:
+    void InitEvaluation(int run_seed, int max_samples) override;
+    vectord SingleStep() override;
+    vectord BestCurrent() override;
 
   protected:
-    void SingleRun(int run_seed, int iterations);
+    void OutputHeader(std::ofstream* of) override;
     bopt_params CreateParameters(int seed, int iterations);
-    double Regret(const vectord& point);
-    std::vector<double> CalcDist(const std::vector<vectord>& points);
-    void OutputRegrets(std::ofstream* of);
-    void OutputDists(std::ofstream* of);
 
   protected:
     const std::string criteria_;
     const std::string kernel_; 
     const std::string surrogate_; 
     const int it_relearn_;
-    const int init_samples_;
-    std::vector<std::vector<double>> all_regrets_;
-    std::vector<std::vector<double>> all_dists_;
+    std::unique_ptr<BOModel> current_model_;
 };
