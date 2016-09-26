@@ -9,6 +9,7 @@
 #include "functions.h"
 #include "boharness.h"
 #include "logoharness.h"
+#include "randomharness.h"
 
 #include "cpplogo/logging.h" //TODO: This is just so we can disable logging!
 
@@ -109,8 +110,7 @@ HarnessPtr create_bo(int seed, const Function& fn,
   return bo;
 }
 
-HarnessPtr create_logo(int seed, const Function& fn, 
-                                     ArgDeque* args) 
+HarnessPtr create_logo(int seed, const Function& fn, ArgDeque* args) 
 {
   if (args->size() != 0) {
     throw std::invalid_argument("Bad number of algorithm arguments.");
@@ -121,8 +121,18 @@ HarnessPtr create_logo(int seed, const Function& fn,
   return logo;
 }
 
-HarnessPtr create_harness(int seed, const Function& fn, 
-                                        ArgDeque* args) 
+HarnessPtr create_random(int seed, const Function& fn, ArgDeque* args) 
+{
+  if (args->size() != 0) {
+    throw std::invalid_argument("Bad number of algorithm arguments.");
+  }
+  std::cout << "RANDOM" << std::endl;
+  std::unique_ptr<Harness> random;
+  random.reset(new RandomHarness(fn, seed));
+  return random;
+}
+
+HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args) 
 {
   std::string alg_name = args->front();
   args->pop_front();
@@ -132,6 +142,8 @@ HarnessPtr create_harness(int seed, const Function& fn,
     return create_bo(seed, fn, args);
   } else if (alg_name == "LOGO") {
     return create_logo(seed, fn, args);
+  } else if (alg_name == "RANDOM") {
+    return create_random(seed, fn, args);
   } else {
     throw std::invalid_argument("Unknown algorithm");
   }
