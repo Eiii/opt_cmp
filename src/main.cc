@@ -33,20 +33,21 @@ std::vector<const Function*> functions = {
   &f_rosenbrock_2,
   &f_hartman_3,
   &f_shekel_7, 
-  &f_hartman_6,
   &f_rosenbrock_10
 };
 
 void comp() 
 {
   constexpr int NUM_ITERATIONS = 20;
-  std::ofstream of("bo.csv");
+  std::ofstream of("random.csv");
+  /*
   for (const auto& fn : functions) {
     BOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&of);
   }
+  */
   /*
   for (const auto& fn : functions) {
     LOGOHarness harness(*fn, MAIN_SEED);
@@ -55,6 +56,12 @@ void comp()
     harness.OutputResult(&of);
   }
   */
+  for (const auto& fn : functions) {
+    RandomHarness harness(*fn, MAIN_SEED);
+    std::cout << harness.name() << " / " << fn->name << std::endl;
+    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
+    harness.OutputResult(&of);
+  }
   of.close();
 }
 
@@ -73,7 +80,7 @@ const Function* get_function(ArgDeque* args)
 }
 
 using HarnessPtr = std::unique_ptr<Harness>;
-using ArgsResult = std::tuple<HarnessPtr, int, int>;
+using ArgsResult = std::tuple<std::string, HarnessPtr, int, int>;
 HarnessPtr create_bo(int seed, const Function& fn, 
                                    ArgDeque* args) 
 {
@@ -154,6 +161,11 @@ ArgsResult parse_args(int argc, const char* argv[])
 {
   ArgDeque args(argv, argv+argc);
 
+  //Get output name
+  std::string out_file = args.front();
+  args.pop_front();
+  std::cout << "Output file: " << out_file << std::endl;
+
   //Get samples
   int samples = std::stoi(args.front());
   args.pop_front();
@@ -175,22 +187,23 @@ ArgsResult parse_args(int argc, const char* argv[])
 
   HarnessPtr harness = create_harness(seed, fn, &args);
 
-  return ArgsResult(std::move(harness), samples, iterations);
+  return ArgsResult(out_file, std::move(harness), samples, iterations);
 }
 
 int main(int argc, const char* argv[]) 
 {
   init_logging(logo::info); //Disable cpplogo logging. Dumb.
   if (argc == 1) {
-    //comp();
+    comp();
   } else {
+    std::string out_filename;
     HarnessPtr harness;
     int samples, num_it;
-    std::tie(harness, samples, num_it) = parse_args(argc-1, argv+1);
+    std::tie(out_filename, harness, samples, num_it) = parse_args(argc-1, argv+1);
     harness->Evaluate(samples, num_it); 
 
     std::ofstream output;
-    output.open(harness->out_filename());
+    output.open(out_filename);
     harness->OutputResult(&output);
     output.close();
   }

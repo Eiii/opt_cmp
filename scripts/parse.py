@@ -4,7 +4,7 @@ import csv
 
 def next_line(reader):
   line = None
-  while line == None or line[0] == '#':
+  while line == None or line[0][0] == '#':
     line = reader.next()
   return line
 

@@ -18,9 +18,6 @@ class Harness
 
   public:
     const std::string& name() const { return name_; } 
-    const std::string out_filename() const { 
-      return name_ + "_" + fn_.name + ".csv"; 
-    }
 
   protected:
     RandomEngine rng_;
