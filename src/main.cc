@@ -9,6 +9,7 @@
 #include "functions.h"
 #include "boharness.h"
 #include "logoharness.h"
+#include "sooharness.h"
 #include "randomharness.h"
 
 #include "cpplogo/logging.h" //TODO: This is just so we can disable logging!
@@ -38,8 +39,8 @@ std::vector<const Function*> functions = {
 
 void comp() 
 {
-  constexpr int NUM_ITERATIONS = 20;
-  std::ofstream of("random.csv");
+  constexpr int NUM_ITERATIONS = 100;
+  std::ofstream of("bamsoo.csv");
   /*
   for (const auto& fn : functions) {
     BOHarness harness(*fn, MAIN_SEED);
@@ -55,9 +56,15 @@ void comp()
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&of);
   }
-  */
   for (const auto& fn : functions) {
     RandomHarness harness(*fn, MAIN_SEED);
+    std::cout << harness.name() << " / " << fn->name << std::endl;
+    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
+    harness.OutputResult(&of);
+  }
+  */
+  for (const auto& fn : functions) {
+    SOOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&of);
@@ -126,6 +133,17 @@ HarnessPtr create_logo(int seed, const Function& fn, ArgDeque* args)
   std::unique_ptr<Harness> logo;
   logo.reset(new LOGOHarness(fn, seed));
   return logo;
+}
+
+HarnessPtr create_soo(int seed, const Function& fn, ArgDeque* args) 
+{
+  if (args->size() != 0) {
+    throw std::invalid_argument("Bad number of algorithm arguments.");
+  }
+  std::cout << "SOO" << std::endl;
+  std::unique_ptr<Harness> soo;
+  soo.reset(new SOOHarness(fn, seed));
+  return soo;
 }
 
 HarnessPtr create_random(int seed, const Function& fn, ArgDeque* args) 

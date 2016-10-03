@@ -1,4 +1,4 @@
-#include "logoharness.h"
+#include "sooharness.h"
 
 #include "common.h"
 #include "cpplogo/logo.h"
@@ -8,20 +8,12 @@
 * Copied from cpplogo/settings.h
 *********************************************************************/
 namespace {
-Settings s_logo = {
-  .name = "LOGO",
-  .w_sched = [](const logo::LOGO& logo) {
-    constexpr std::array<size_t, 6> w{{3, 4, 5, 6, 8, 30}};
-    size_t idx = std::find(w.cbegin(), w.cend(), logo.w()) - w.cbegin();
-    assert(0 <= idx && idx < w.size());
-    if (logo.PrevBestIterationObservation(0) >= logo.PrevBestIterationObservation(1)) {
-      if (idx < w.size()-1) idx++;
-    } else {
-      if (idx > 0) idx--; 
-    }
-    return w[idx];
+Settings s_soo = {
+  .name = "SOO",
+  .w_sched = [](const logo::LOGO&) {
+    return 1;
   },
-  .init_w = 3,
+  .init_w = 1,
 };
 
 double h_max(const logo::LOGO& logo) 
@@ -34,16 +26,15 @@ double h_max(const logo::LOGO& logo)
 }
 }
 
-
 /*********************************************************************
-* LOGOHarness Class
+* SOOHarness Class
 *********************************************************************/
-LOGOHarness::LOGOHarness(const Function& fn, int seed) :
-    Harness("LOGO", fn, seed), all_regrets_(), setting_(s_logo)
+SOOHarness::SOOHarness(const Function& fn, int seed) :
+    Harness("SOO", fn, seed), all_regrets_(), setting_(s_soo)
 {
-} /* LOGOHarness() */
+} /* SOOHarness() */
 
-void LOGOHarness::Evaluate(int max_samples, int iterations)
+void SOOHarness::Evaluate(int max_samples, int iterations)
 {
   for (int i = 0; i < iterations; i++) {
     RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
@@ -51,13 +42,13 @@ void LOGOHarness::Evaluate(int max_samples, int iterations)
   }
 } /* Evaluate() */
 
-void LOGOHarness::OutputData(std::ofstream* of)
+void SOOHarness::OutputData(std::ofstream* of)
 {
   OutputRegrets(of);
   OutputWs(of);
 } /* OutputData() */
 
-void LOGOHarness::OutputHeader(std::ofstream* of)
+void SOOHarness::OutputHeader(std::ofstream* of)
 {
   constexpr int NUM_SECTIONS = 2;
   *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
@@ -69,12 +60,12 @@ void LOGOHarness::OutputHeader(std::ofstream* of)
   *of << std::endl;
 } /* OutputHeader() */
 
-void LOGOHarness::SingleRun(int run_seed, int max_samples)
+void SOOHarness::SingleRun(int run_seed, int max_samples)
 {
   std::vector<std::tuple<int, double>> run_regrets;
   std::vector<std::tuple<int, double>> run_ws;
 
-  auto options = BuildOptions(s_logo, max_samples, run_seed);
+  auto options = BuildOptions(setting_, max_samples, run_seed);
   logo::LOGO logo(options);
 
   while (!logo.IsDone()) {
@@ -91,25 +82,25 @@ void LOGOHarness::SingleRun(int run_seed, int max_samples)
   all_ws_.push_back(DenseValues(run_ws, max_samples));
 }
 
-double LOGOHarness::Regret(const logo::LOGO& logo) const
+double SOOHarness::Regret(const logo::LOGO& logo) const
 {
   double regret = fn_.fn_max - logo.library().BestObservation();
   return regret;
 } /* Regret() */
 
-void LOGOHarness::OutputRegrets(std::ofstream* of) const
+void SOOHarness::OutputRegrets(std::ofstream* of) const
 {
   *of << "REGRETS," << all_regrets_.size() << std::endl;
   output_csv(all_regrets_, of);
 } /* OutputRegrets() */
 
-void LOGOHarness::OutputWs(std::ofstream* of) const
+void SOOHarness::OutputWs(std::ofstream* of) const
 {
   *of << "WS," << all_ws_.size() << std::endl;
   output_csv(all_ws_, of);
 } /* OutputWs() */
 
-logo::Options LOGOHarness::BuildOptions(const Settings& opt, int max, int seed) const
+logo::Options SOOHarness::BuildOptions(const Settings& opt, int max, int seed) const
 {
   logo::Options o = {
     .seed = seed,
@@ -126,7 +117,7 @@ logo::Options LOGOHarness::BuildOptions(const Settings& opt, int max, int seed) 
   return o;
 } /* BuildOptions() */
 
-std::vector<double> LOGOHarness::DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples)
+std::vector<double> SOOHarness::DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples)
 {
   std::vector<double> result(max_samples);
   auto reg_entry = regrets.begin();

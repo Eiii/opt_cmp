@@ -10,7 +10,6 @@ set( PROJ_INCLUDES "${CMAKE_CURRENT_SOURCE_DIR}/include" )
 project( ${PROJ_NAME} )
 
 #set( Boost_NO_BOOST_CMAKE TRUE )
-add_subdirectory( bayesopt )
 set( BAYESOPT_INCLUDES "bayesopt/include" "bayesopt/utils" )
 
 add_subdirectory( cpplogo )
@@ -34,4 +33,4 @@ message( STATUS ${Boost_LIBRARIES} )
 include_directories( ${PROJ_INCLUDES} )
 include_directories( SYSTEM  ${BAYESOPT_INCLUDES} ${CPPLOGO_INCLUDES} )
 add_executable( ${PROJ_EXE} ${PROJ_SOURCES} ${PROJ_HACKS} )
-target_link_libraries( ${PROJ_EXE} bayesopt cpplogo ${Boost_LIBRARIES} )
+target_link_libraries( ${PROJ_EXE} cpplogo ${Boost_LIBRARIES} )
