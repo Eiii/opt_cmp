@@ -58,6 +58,8 @@ def plot_vals_err(fn, regrets, ylabel="Regret", log_scale=False, ymax_dict={}):
   ax = plt.gca()
   lcl_data = {k: (list_avg(v), list_std(v)) for (k, v) in regrets.iteritems()}
   for (name, (reg, err)) in lcl_data.iteritems():
+    reg = reg[:100]
+    err = err[:100]
     x = range(len(reg))
     err_top = [a+b for a,b in zip(reg, err)]
     err_bot = [a-b for a,b in zip(reg, err)]
@@ -127,10 +129,32 @@ def plot_singles(fn, top, bot, bottom_log=True):
   plt.plot(xs, bot)
   plt.xlabel('Function Evaluations')
 
+def output_all_regrets():
+  use_log_scale = True
+  ymax_dict = {'rosenbrock_2' : 4 }
+  data = load_data("soo.csv")
+  data = load_data("logo.csv", data)
+  data = load_data("bamsoo.csv", data)
+  data = load_data("bo_rosenbrock10.csv", data)
+  data = load_data("bo_rosenbrock2.csv", data)
+  data = load_data("bo_shekel7.csv", data)
+  data = load_data("bo_rosenbrock10_lcb.csv", data)
+  data = load_data("bo_rosenbrock2_lcb.csv", data)
+  data = load_data("bo_shekel7_lcb.csv", data)
+
+  for fn in all_fns(data):
+    regrets = data_filter(data, fn, REGRETS)
+    plt.clf()
+    plot_vals_err(fn, regrets, log_scale=use_log_scale)
+    out_name = fn+'_regrets.png'
+    plt.savefig(out_name, bbox_inches='tight')
+
 def output_all_plots():
   use_log_scale = False
   ymax_dict = {'rosenbrock_2' : 4 }
-  data = load_data("bo.csv")
+  data = load_data("soo.csv")
+  data = load_data("logo.csv", data)
+  data = load_data("bamsoo.csv", data)
 
   for fn in all_fns(data):
     regrets = data_filter(data, fn, REGRETS)
@@ -194,5 +218,5 @@ def main():
 
 if __name__ == "__main__":
   #main()
-  #output_all_plots()
-  output_singles()
+  output_all_regrets()
+  #output_singles()

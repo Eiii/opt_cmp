@@ -40,7 +40,7 @@ std::vector<const Function*> functions = {
 void comp() 
 {
   constexpr int NUM_ITERATIONS = 100;
-  std::ofstream of("bamsoo.csv");
+  std::ofstream of("logo.csv");
   /*
   for (const auto& fn : functions) {
     BOHarness harness(*fn, MAIN_SEED);
@@ -49,26 +49,26 @@ void comp()
     harness.OutputResult(&of);
   }
   */
-  /*
   for (const auto& fn : functions) {
     LOGOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&of);
   }
+  /*
   for (const auto& fn : functions) {
     RandomHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&of);
   }
-  */
   for (const auto& fn : functions) {
     SOOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&of);
   }
+  */
   of.close();
 }
 

@@ -70,7 +70,7 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
 
   while (!logo.IsDone()) {
     logo.Step();
-    int samples = logo.library()->NumSamples();
+    int samples = logo.library().NumSamples();
     double regret = Regret(logo);
     double w = static_cast<double>(logo.w());
     run_regrets.push_back(std::make_pair(samples, regret));
