@@ -51,22 +51,24 @@ void LOGOHarness::Evaluate(int max_samples, int iterations)
   }
 } /* Evaluate() */
 
-void LOGOHarness::OutputData(std::ofstream* of)
+void LOGOHarness::OutputData(nlohmann::json* j)
 {
-  OutputRegrets(of);
-  OutputWs(of);
+  OutputRegrets(j);
+  OutputWs(j);
 } /* OutputData() */
 
-void LOGOHarness::OutputHeader(std::ofstream* of)
+void LOGOHarness::OutputHeader(nlohmann::json* j)
 {
-  constexpr int NUM_SECTIONS = 2;
-  *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
+  (*j)["FN_NAME"] = fn_.name;
+  (*j)["NAME"] = name_;
 
   //Output extra info
-  *of << "# ";
-  *of << "v1,";
-  *of << "seed:" << seed_;
-  *of << std::endl;
+  std::stringstream ss;
+  ss << "# ";
+  ss << "v1,";
+  ss << "seed:" << seed_;
+  ss << std::endl;
+  (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
 
 void LOGOHarness::SingleRun(int run_seed, int max_samples)
@@ -97,16 +99,14 @@ double LOGOHarness::Regret(const logo::LOGO& logo) const
   return regret;
 } /* Regret() */
 
-void LOGOHarness::OutputRegrets(std::ofstream* of) const
+void LOGOHarness::OutputRegrets(nlohmann::json* j) const
 {
-  *of << "REGRETS," << all_regrets_.size() << std::endl;
-  output_csv(all_regrets_, of);
+  (*j)["REGRETS"] = all_regrets_;
 } /* OutputRegrets() */
 
-void LOGOHarness::OutputWs(std::ofstream* of) const
+void LOGOHarness::OutputWs(nlohmann::json* j) const
 {
-  *of << "WS," << all_ws_.size() << std::endl;
-  output_csv(all_ws_, of);
+  (*j)["WS"] = all_ws_;
 } /* OutputWs() */
 
 logo::Options LOGOHarness::BuildOptions(const Settings& opt, int max, int seed) const

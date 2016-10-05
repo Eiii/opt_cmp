@@ -22,7 +22,7 @@ class BOHarness : public SequentialHarness
     vectord BestCurrent() override;
 
   protected:
-    void OutputHeader(std::ofstream* of) override;
+    void OutputHeader(nlohmann::json* j) override;
     bopt_params CreateParameters(int seed, int iterations);
 
   protected:

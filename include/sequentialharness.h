@@ -16,9 +16,9 @@ class SequentialHarness : public Harness
     void SingleRun(int run_seed, int iterations);
     double Regret(const vectord& point);
     std::vector<double> CalcDist(const std::vector<vectord>& points);
-    void OutputData(std::ofstream* of) override;
-    void OutputRegrets(std::ofstream* of);
-    void OutputDists(std::ofstream* of);
+    void OutputData(nlohmann::json* json) override;
+    void OutputRegrets(nlohmann::json* json);
+    void OutputDists(nlohmann::json* json);
 
   protected:
     virtual void InitEvaluation(int run_seed, int max_samples) = 0;

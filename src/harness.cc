@@ -5,8 +5,11 @@ Harness::Harness(std::string name, const Function& fn, int seed) :
 {
 } /* Harness() */
 
-void Harness::OutputResult(std::ofstream* of)
+void Harness::OutputResult(nlohmann::json* j)
 {
-  OutputHeader(of);
-  OutputData(of);
+  nlohmann::json entry;
+  OutputHeader(&entry);
+  OutputData(&entry);
+  j->push_back(entry);
 } /* OutputResult() */
+

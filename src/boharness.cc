@@ -32,20 +32,22 @@ vectord BOHarness::BestCurrent()
   return current_model_->getFinalResult();
 } /* BestCurrent() */
 
-void BOHarness::OutputHeader(std::ofstream* of)
+void BOHarness::OutputHeader(nlohmann::json* j)
 {
-  *of << fn_.name << "," << name_ << "," << num_data_sections_ << std::endl;
+  (*j)["FN_NAME"] = fn_.name;
+  (*j)["NAME"] = name_;
 
   //Output extra info
-  *of << "# ";
-  *of << "v1,";
-  *of << "seed:" << seed_ << ",";
-  *of << "crit:" << criteria_ << ",";
-  *of << "kernel:" << kernel_ << ",";
-  *of << "surrogate:" << surrogate_ << ",";
-  *of << "it_relearn:" << it_relearn_ << ",";
-  *of << "init_samples:" << init_samples_ << ",";
-  *of << std::endl;
+  std::stringstream ss;
+  ss << "# ";
+  ss << "v1,";
+  ss << "seed:" << seed_ << ",";
+  ss << "crit:" << criteria_ << ",";
+  ss << "kernel:" << kernel_ << ",";
+  ss << "surrogate:" << surrogate_ << ",";
+  ss << "it_relearn:" << it_relearn_ << ",";
+  ss << "init_samples:" << init_samples_ << ",";
+  (*j)["VERSION"] = ss.str();
 } /* OutputData() */
 
 bopt_params BOHarness::CreateParameters(int seed, int iterations)

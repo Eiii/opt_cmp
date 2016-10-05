@@ -51,22 +51,20 @@ double SequentialHarness::Regret(const vectord& point)
   return diff;
 } /* Regret() */
 
-void SequentialHarness::OutputData(std::ofstream* of)
+void SequentialHarness::OutputData(nlohmann::json* j)
 {
-  OutputRegrets(of);
-  OutputDists(of);
+  OutputRegrets(j);
+  OutputDists(j);
 } /* OutputData() */
 
-void SequentialHarness::OutputRegrets(std::ofstream* of)
+void SequentialHarness::OutputRegrets(nlohmann::json* j)
 {
-  *of << "REGRETS," << all_regrets_.size() << std::endl;
-  output_csv(all_regrets_, of);
+  (*j)["REGRETS"] = all_regrets_;
 } /* OutputRegrets() */
 
-void SequentialHarness::OutputDists(std::ofstream* of)
+void SequentialHarness::OutputDists(nlohmann::json* j)
 {
-  *of << "DISTS," << all_dists_.size() << std::endl;
-  output_csv(all_dists_, of);
+  (*j)["DISTS"] = all_dists_;
 } /* OutputDists() */
 
 //Helper functions for CalcDist

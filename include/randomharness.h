@@ -14,7 +14,7 @@ class RandomHarness : public SequentialHarness
     vectord BestCurrent() override;
 
   protected:
-    void OutputHeader(std::ofstream* of) override;
+    void OutputHeader(nlohmann::json* json) override;
 
   protected:
     bool has_best;

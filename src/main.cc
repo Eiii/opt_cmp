@@ -33,42 +33,42 @@ std::vector<const Function*> all_functions = {
 std::vector<const Function*> functions = { 
   &f_rosenbrock_2,
   &f_hartman_3,
+  /*
   &f_shekel_7, 
   &f_rosenbrock_10
+  */
 };
 
 void comp() 
 {
-  constexpr int NUM_ITERATIONS = 100;
-  std::ofstream of("logo.csv");
-  /*
+  constexpr int NUM_ITERATIONS = 2;
+  std::ofstream of("output.json");
+  nlohmann::json json = nlohmann::json::array();
   for (const auto& fn : functions) {
     BOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&of);
+    harness.OutputResult(&json);
   }
-  */
   for (const auto& fn : functions) {
     LOGOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&of);
+    harness.OutputResult(&json);
   }
-  /*
   for (const auto& fn : functions) {
     RandomHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&of);
+    harness.OutputResult(&json);
   }
   for (const auto& fn : functions) {
     SOOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&of);
+    harness.OutputResult(&json);
   }
-  */
+  of << std::setw(4) << json;
   of.close();
 }
 
@@ -221,8 +221,10 @@ int main(int argc, const char* argv[])
     harness->Evaluate(samples, num_it); 
 
     std::ofstream output;
+    nlohmann::json json;
     output.open(out_filename);
-    harness->OutputResult(&output);
+    harness->OutputResult(&json);
+    output << json;
     output.close();
   }
 }

@@ -42,22 +42,23 @@ void SOOHarness::Evaluate(int max_samples, int iterations)
   }
 } /* Evaluate() */
 
-void SOOHarness::OutputData(std::ofstream* of)
+void SOOHarness::OutputData(nlohmann::json* j)
 {
-  OutputRegrets(of);
-  OutputWs(of);
+  OutputRegrets(j);
+  OutputWs(j);
 } /* OutputData() */
 
-void SOOHarness::OutputHeader(std::ofstream* of)
+void SOOHarness::OutputHeader(nlohmann::json* j)
 {
-  constexpr int NUM_SECTIONS = 2;
-  *of << fn_.name << "," << name_ << "," << NUM_SECTIONS << std::endl;
+  (*j)["FN_NAME"] = fn_.name;
+  (*j)["NAME"] = name_;
 
   //Output extra info
-  *of << "# ";
-  *of << "v1,";
-  *of << "seed:" << seed_;
-  *of << std::endl;
+  std::stringstream ss;
+  ss << "# ";
+  ss << "v1,";
+  ss << "seed:" << seed_;
+  (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
 
 void SOOHarness::SingleRun(int run_seed, int max_samples)
@@ -88,16 +89,14 @@ double SOOHarness::Regret(const logo::LOGO& logo) const
   return regret;
 } /* Regret() */
 
-void SOOHarness::OutputRegrets(std::ofstream* of) const
+void SOOHarness::OutputRegrets(nlohmann::json* j) const
 {
-  *of << "REGRETS," << all_regrets_.size() << std::endl;
-  output_csv(all_regrets_, of);
+  (*j)["REGRETS"] = all_regrets_;
 } /* OutputRegrets() */
 
-void SOOHarness::OutputWs(std::ofstream* of) const
+void SOOHarness::OutputWs(nlohmann::json* j) const
 {
-  *of << "WS," << all_ws_.size() << std::endl;
-  output_csv(all_ws_, of);
+  (*j)["WS"] = all_ws_;
 } /* OutputWs() */
 
 logo::Options SOOHarness::BuildOptions(const Settings& opt, int max, int seed) const

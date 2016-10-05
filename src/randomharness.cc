@@ -36,7 +36,9 @@ vectord RandomHarness::BestCurrent()
   return best_point;
 } /* BestCurrent() */
 
-void RandomHarness::OutputHeader(std::ofstream* of)
+void RandomHarness::OutputHeader(nlohmann::json* j)
 {
-  *of << fn_.name << "," << name_ << "," << num_data_sections_ << std::endl;
+  (*j)["FN_NAME"] = fn_.name;
+  (*j)["NAME"] = name_;
+  (*j)["VERSION"] = "v1";
 } /* OutputData() */

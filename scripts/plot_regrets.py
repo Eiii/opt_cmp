@@ -132,15 +132,7 @@ def plot_singles(fn, top, bot, bottom_log=True):
 def output_all_regrets():
   use_log_scale = True
   ymax_dict = {'rosenbrock_2' : 4 }
-  data = load_data("soo.csv")
-  data = load_data("logo.csv", data)
-  data = load_data("bamsoo.csv", data)
-  data = load_data("bo_rosenbrock10.csv", data)
-  data = load_data("bo_rosenbrock2.csv", data)
-  data = load_data("bo_shekel7.csv", data)
-  data = load_data("bo_rosenbrock10_lcb.csv", data)
-  data = load_data("bo_rosenbrock2_lcb.csv", data)
-  data = load_data("bo_shekel7_lcb.csv", data)
+  data = load_data("output.json")
 
   for fn in all_fns(data):
     regrets = data_filter(data, fn, REGRETS)
@@ -210,10 +202,9 @@ def output_singles():
       plt.savefig(out_name, bbox_inches='tight')
 
 def main():
-  data = load_data("bo.csv")
+  data = load_data("output.json")
   d = data_for_fn('hartman_3', data)['BO1']
-  d = reduce_sublists(pair_slope_val(2, d, DISTS))
-  print map(len, d)
+  print d
 
 
 if __name__ == "__main__":

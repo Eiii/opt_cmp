@@ -1,12 +1,21 @@
 #!/usr/bin/env python
 
-import csv
+import json
 
-def next_line(reader):
-  line = None
-  while line == None or line[0][0] == '#':
-    line = reader.next()
-  return line
+def to_nan(l):
+  def _list_rec(x):
+    if type(x) == list:
+      return map(_list_rec, x)
+    else:
+      if x == None:
+        return float('nan')
+      else:
+        return x
+      
+  if type(l) == list:
+    return map(_list_rec, l)
+  else:
+    return l
 
 def load_data(fname, prev_results=None):
   if prev_results:
@@ -14,29 +23,18 @@ def load_data(fname, prev_results=None):
   else:
     results = {}
   with open(fname) as f:
-    reader = csv.reader(f)
-    try:
-      while True:
-        fn, name, num_sections = next_line(reader)
-        data = {}
-        for _ in range(int(num_sections)):
-          load_section(data, reader)
-        results[(fn, name)] = data
-    except StopIteration:
-      pass
+    rs = json.load(f)
+    for result in rs:
+      fn = result["FN_NAME"]
+      name = result["NAME"]
+      d = {}
+      for k,v in result.iteritems():
+        d[str(k)] = to_nan(v)
+      results[(fn, name)] = d
   return results
 
-def load_section(data, reader):
-  name, count = next_line(reader)
-  section_data = []
-  for _ in range(int(count)):
-    line = next_line(reader);
-    section_data.append(map(float, line))
-  data[name] = section_data
-
-
 def main():
-  data = load_data("bo.csv")
+  data = load_data("output.json")
   print data
 
 if __name__ == "__main__":

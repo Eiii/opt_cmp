@@ -16,6 +16,9 @@ set( BAYESOPT_INCLUDES "bayesopt/include" "bayesopt/utils" )
 add_subdirectory( cpplogo )
 set( CPPLOGO_INCLUDES "cpplogo/include" )
 
+#add_subdirectory( json )
+set( JSON_INCLUDES "json/src" )
+
 set( CMAKE_CXX_FLAGS "-std=c++14 -Wall -pthread -static-libstdc++" )
 set( CMAKE_CXX_FLAGS_RELEASE "-O3" )
 set( CMAKE_CXX_FLAGS_DEBUG "-gdwarf-3" )
@@ -32,6 +35,6 @@ include_directories( SYSTEM ${Boost_INCLUDE_DIR} )
 message( STATUS ${Boost_LIBRARIES} )
 
 include_directories( ${PROJ_INCLUDES} )
-include_directories( SYSTEM  ${BAYESOPT_INCLUDES} ${CPPLOGO_INCLUDES} )
+include_directories( SYSTEM  ${BAYESOPT_INCLUDES} ${CPPLOGO_INCLUDES} ${JSON_INCLUDES} )
 add_executable( ${PROJ_EXE} ${PROJ_SOURCES} ${PROJ_HACKS} )
 target_link_libraries( ${PROJ_EXE} cpplogo bayesopt ${Boost_LIBRARIES} )

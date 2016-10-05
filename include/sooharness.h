@@ -12,14 +12,14 @@ class SOOHarness : public Harness
 
   public:
     void Evaluate(int max_samples, int iterations) override;
-    void OutputData(std::ofstream* of) override;
-    void OutputHeader(std::ofstream* of) override;
+    void OutputData(nlohmann::json* j) override;
+    void OutputHeader(nlohmann::json* j) override;
 
   protected:
     void SingleRun(int run_seed, int max_samples);
     double Regret(const logo::LOGO& logo) const;
-    void OutputRegrets(std::ofstream* of) const;
-    void OutputWs(std::ofstream* of) const;
+    void OutputRegrets(nlohmann::json* j) const;
+    void OutputWs(nlohmann::json* j) const;
     logo::Options BuildOptions(const Settings& opt, int max, int seed) const;
     std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);
 
