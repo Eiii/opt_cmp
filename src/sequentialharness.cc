@@ -43,6 +43,7 @@ void SequentialHarness::SingleRun(int run_seed, int max_samples)
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(run_regrets);
   all_dists_.push_back(CalcDist(run_points));
+  all_points_.push_back(vectord_to_vector(run_points));
 }
 
 double SequentialHarness::Regret(const vectord& point)
@@ -55,6 +56,7 @@ void SequentialHarness::OutputData(nlohmann::json* j)
 {
   OutputRegrets(j);
   OutputDists(j);
+  OutputPoints(j);
 } /* OutputData() */
 
 void SequentialHarness::OutputRegrets(nlohmann::json* j)
@@ -66,6 +68,11 @@ void SequentialHarness::OutputDists(nlohmann::json* j)
 {
   (*j)["DISTS"] = all_dists_;
 } /* OutputDists() */
+
+void SequentialHarness::OutputPoints(nlohmann::json* j)
+{
+  (*j)["POINTS"] = all_points_;
+} /* OutputPoints() */
 
 //Helper functions for CalcDist
 namespace {

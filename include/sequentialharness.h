@@ -19,6 +19,7 @@ class SequentialHarness : public Harness
     void OutputData(nlohmann::json* json) override;
     void OutputRegrets(nlohmann::json* json);
     void OutputDists(nlohmann::json* json);
+    void OutputPoints(nlohmann::json* j);
 
   protected:
     virtual void InitEvaluation(int run_seed, int max_samples) = 0;
@@ -30,5 +31,5 @@ class SequentialHarness : public Harness
     const int init_samples_;
     std::vector<std::vector<double>> all_regrets_;
     std::vector<std::vector<double>> all_dists_;
-    std::vector<std::vector<vectord>> all_points_;
+    std::vector<std::vector<std::vector<double>>> all_points_;
 };
