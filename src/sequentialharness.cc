@@ -1,6 +1,8 @@
 #include "sequentialharness.h"
 #include "common.h"
 
+#include <iostream>
+
 SequentialHarness::SequentialHarness(std::string name, const Function& fn, 
                                      int seed, int init_samples) :
     Harness(name, fn, seed), 
@@ -17,6 +19,10 @@ void SequentialHarness::Evaluate(int max_samples, int iterations)
   for (int i = 0; i < iterations; i++) {
     RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
     SingleRun(rand_seed(), max_samples);
+    if ((i+1) % 25 == 0) {
+      std::cout << "Finished iteration " << (i+1) << std::endl;
+      std::cout.flush();
+    }
   }
 } /* Evaluate() */
 
