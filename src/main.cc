@@ -8,11 +8,10 @@
 
 #include "functions.h"
 #include "boharness.h"
-#include "logoharness.h"
 #include "sooharness.h"
 #include "randomharness.h"
 
-#include "cpplogo/logging.h" //TODO: This is just so we can disable logging!
+#include "cpplogo2/logging.h" //TODO: This is just so we can disable logging!
 
 constexpr int SAMPLES = 100;
 constexpr int MAIN_SEED = 1337;
@@ -46,12 +45,6 @@ void comp()
   nlohmann::json json = nlohmann::json::array();
   for (const auto& fn : functions) {
     BOHarness harness(*fn, MAIN_SEED);
-    std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&json);
-  }
-  for (const auto& fn : functions) {
-    LOGOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&json);
@@ -124,17 +117,6 @@ HarnessPtr create_bo(int seed, const Function& fn,
   return bo;
 }
 
-HarnessPtr create_logo(int seed, const Function& fn, ArgDeque* args) 
-{
-  if (args->size() != 0) {
-    throw std::invalid_argument("Bad number of algorithm arguments.");
-  }
-  std::cout << "LOGO" << std::endl;
-  std::unique_ptr<Harness> logo;
-  logo.reset(new LOGOHarness(fn, seed));
-  return logo;
-}
-
 HarnessPtr create_soo(int seed, const Function& fn, ArgDeque* args) 
 {
   if (args->size() != 0) {
@@ -165,8 +147,6 @@ HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args)
   std::cout << "Alg: ";
   if (alg_name == "BO1") {
     return create_bo(seed, fn, args);
-  } else if (alg_name == "LOGO") {
-    return create_logo(seed, fn, args);
   } else if (alg_name == "RANDOM") {
     return create_random(seed, fn, args);
   } else {
@@ -210,7 +190,6 @@ ArgsResult parse_args(int argc, const char* argv[])
 
 int main(int argc, const char* argv[]) 
 {
-  init_logging(logo::info); //Disable cpplogo logging. Dumb.
   if (argc == 1) {
     comp();
   } else {

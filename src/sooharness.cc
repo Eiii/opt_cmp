@@ -1,36 +1,12 @@
 #include "sooharness.h"
 
 #include "common.h"
-#include "cpplogo/logo.h"
-
-/*********************************************************************
-* LOGO Settings
-* Copied from cpplogo/settings.h
-*********************************************************************/
-namespace {
-Settings s_soo = {
-  .name = "SOO",
-  .w_sched = [](const logo::LOGO&) {
-    return 1;
-  },
-  .init_w = 1,
-};
-
-double h_max(const logo::LOGO& logo) 
-{ 
-  double n = logo.num_samples();
-  //double w = logo.w();
-  double w = 1.0;
-  double val = w * sqrt(n);
-  return std::max(val, 0.0); 
-}
-}
 
 /*********************************************************************
 * SOOHarness Class
 *********************************************************************/
 SOOHarness::SOOHarness(const Function& fn, int seed) :
-    Harness("SOO", fn, seed), all_regrets_(), setting_(s_soo)
+    Harness("SOO", fn, seed), all_regrets_()
 {
 } /* SOOHarness() */
 
@@ -45,7 +21,6 @@ void SOOHarness::Evaluate(int max_samples, int iterations)
 void SOOHarness::OutputData(nlohmann::json* j)
 {
   OutputRegrets(j);
-  OutputWs(j);
 } /* OutputData() */
 
 void SOOHarness::OutputHeader(nlohmann::json* j)
@@ -56,7 +31,7 @@ void SOOHarness::OutputHeader(nlohmann::json* j)
   //Output extra info
   std::stringstream ss;
   ss << "# ";
-  ss << "v1,";
+  ss << "v2,";
   ss << "seed:" << seed_;
   (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
@@ -66,26 +41,23 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   std::vector<std::tuple<int, double>> run_regrets;
   std::vector<std::tuple<int, double>> run_ws;
 
-  auto options = BuildOptions(setting_, max_samples, run_seed);
-  logo::LOGO logo(options);
+  logo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
+  logo::RandomSOO soo(options);
 
-  while (!logo.IsDone()) {
-    logo.Step();
-    int samples = logo.library().NumSamples();
-    double regret = Regret(logo);
-    double w = static_cast<double>(logo.w());
+  while (!soo.IsFinished()) {
+    soo.Step();
+    int samples = soo.num_observations();
+    double regret = Regret(soo);
     run_regrets.push_back(std::make_pair(samples, regret));
-    run_ws.push_back(std::make_pair(samples, w));
   }
 
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(DenseValues(run_regrets, max_samples));
-  all_ws_.push_back(DenseValues(run_ws, max_samples));
 }
 
-double SOOHarness::Regret(const logo::LOGO& logo) const
+double SOOHarness::Regret(const logo::RandomSOO& soo) const
 {
-  double regret = fn_.fn_max - logo.library().BestObservation();
+  double regret = fn_.fn_max - soo.BestNode()->value();
   return regret;
 } /* Regret() */
 
@@ -93,28 +65,6 @@ void SOOHarness::OutputRegrets(nlohmann::json* j) const
 {
   (*j)["REGRETS"] = all_regrets_;
 } /* OutputRegrets() */
-
-void SOOHarness::OutputWs(nlohmann::json* j) const
-{
-  (*j)["WS"] = all_ws_;
-} /* OutputWs() */
-
-logo::Options SOOHarness::BuildOptions(const Settings& opt, int max, int seed) const
-{
-  logo::Options o = {
-    .seed = seed,
-    .max_samples = max,
-    .k = 3,
-    .min_error = -std::numeric_limits<double>::infinity(),
-    .dim = fn_.dim,
-    .fn = fn_.fn,
-    .fn_max = fn_.fn_max,
-    .w_sched = opt.w_sched,
-    .init_w = opt.init_w,
-    .h_max = h_max,
-  };
-  return o;
-} /* BuildOptions() */
 
 std::vector<double> SOOHarness::DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples)
 {

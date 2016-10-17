@@ -1,8 +1,7 @@
 #pragma once
 
 #include "harness.h"
-#include "logoharness.h"
-#include "cpplogo/logo.h"
+#include "cpplogo2/randomsoo.h"
 
 class SOOHarness : public Harness
 {
@@ -17,14 +16,10 @@ class SOOHarness : public Harness
 
   protected:
     void SingleRun(int run_seed, int max_samples);
-    double Regret(const logo::LOGO& logo) const;
+    double Regret(const logo::RandomSOO& logo) const;
     void OutputRegrets(nlohmann::json* j) const;
-    void OutputWs(nlohmann::json* j) const;
-    logo::Options BuildOptions(const Settings& opt, int max, int seed) const;
     std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);
 
   protected:
     std::vector<std::vector<double>> all_regrets_;
-    std::vector<std::vector<double>> all_ws_;
-    Settings setting_;
 };
