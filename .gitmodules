@@ -1,9 +1,6 @@
 [submodule "bayesopt"]
 	path = bayesopt
 	url = git@github.com:Eiii/bayesopt.git
-[submodule "cpplogo"]
-	path = cpplogo
-	url = git@github.com:Eiii/cpplogo.git
 [submodule "json"]
 	path = json
 	url = https://github.com/nlohmann/json.git
