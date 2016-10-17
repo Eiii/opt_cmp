@@ -6,6 +6,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import sys
+import os
 import functools
 from parse import load_data
 from math import isnan
@@ -132,14 +133,16 @@ def plot_singles(fn, top, bot, bottom_log=True):
 def output_all_regrets():
   use_log_scale = True
   ymax_dict = {'rosenbrock_2' : 4 }
-  data = load_data("output.json")
+  data = load_all(os.getenv("HOME")+"/data/10-10")
 
   for fn in all_fns(data):
+    print "Plotting",fn
     regrets = data_filter(data, fn, REGRETS)
     plt.clf()
     plot_vals_err(fn, regrets, log_scale=use_log_scale)
     out_name = fn+'_regrets.png'
-    plt.savefig(out_name, bbox_inches='tight')
+    plt.gcf().set_size_inches(15, 10)
+    plt.savefig(out_name, dpi=100, bbox_inches='tight')
 
 def output_all_plots():
   use_log_scale = False
@@ -206,6 +209,13 @@ def main():
   d = data_for_fn('hartman_3', data)['BO1']
   print d
 
+def load_all(path):
+  data = None
+  files = [f for f in os.listdir(path) if ".out" in f]
+  for f in files:
+    filepath = os.path.join(path, f)
+    data = load_data(filepath, data)
+  return data
 
 if __name__ == "__main__":
   #main()

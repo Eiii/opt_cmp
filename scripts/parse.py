@@ -17,6 +17,16 @@ def to_nan(l):
   else:
     return l
 
+#Specifically for BO
+def modify_name(name, version):
+  info=version.split(",")[1:-1]
+  info_dict = {}
+  for k,v in [x.split(":") for x in info]:
+    info_dict[k] = v 
+
+  info_str = "-".join(['', info_dict["crit"], info_dict["kernel"]])
+  return name[:-1]+info_str
+
 def load_data(fname, prev_results=None):
   if prev_results:
     results = prev_results
@@ -27,6 +37,7 @@ def load_data(fname, prev_results=None):
     for result in rs:
       fn = result["FN_NAME"]
       name = result["NAME"]
+      name = modify_name(name, result["VERSION"])
       d = {}
       for k,v in result.iteritems():
         d[str(k)] = to_nan(v)
