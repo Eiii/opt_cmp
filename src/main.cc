@@ -15,7 +15,7 @@
 
 #include "cpplogo2/logging.h" //TODO: This is just so we can disable logging!
 
-constexpr int SAMPLES = 100;
+constexpr int SAMPLES = 10;
 constexpr int MAIN_SEED = 1337;
 
 std::vector<const Function*> all_functions = { 
@@ -52,12 +52,6 @@ void comp()
     harness.OutputResult(&json);
   }
   for (const auto& fn : functions) {
-    RandomHarness harness(*fn, MAIN_SEED);
-    std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&json);
-  }
-  for (const auto& fn : functions) {
     SOOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
@@ -71,6 +65,12 @@ void comp()
   }
   for (const auto& fn : functions) {
     BaMSOOHarness harness(*fn, MAIN_SEED);
+    std::cout << harness.name() << " / " << fn->name << std::endl;
+    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
+    harness.OutputResult(&json);
+  }
+  for (const auto& fn : functions) {
+    RandomHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&json);

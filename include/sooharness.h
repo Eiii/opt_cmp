@@ -15,9 +15,10 @@ class SOOHarness : public Harness
     void OutputHeader(nlohmann::json* j) override;
 
   protected:
-    virtual void SingleRun(int run_seed, int max_samples);
+    virtual std::unique_ptr<logo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const;
 
   protected:
+    void SingleRun(int run_seed, int max_samples);
     double Regret(const logo::RandomSOO& logo) const;
     void OutputRegrets(nlohmann::json* j) const;
     std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);

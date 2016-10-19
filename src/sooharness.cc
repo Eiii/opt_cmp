@@ -36,18 +36,28 @@ void SOOHarness::OutputHeader(nlohmann::json* j)
   (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
 
+std::unique_ptr<logo::RandomSOO> SOOHarness::CreateOptimizer(int run_seed, int max_samples) const
+{
+  logo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
+  return std::unique_ptr<logo::RandomSOO>(new logo::RandomSOO(options));
+} /* CreateOptimizer() */
+
 void SOOHarness::SingleRun(int run_seed, int max_samples)
 {
   std::vector<std::tuple<int, double>> run_regrets;
   std::vector<std::tuple<int, double>> run_ws;
 
-  logo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
-  logo::RandomSOO soo(options);
+  auto soo = CreateOptimizer(run_seed, max_samples);
 
-  while (!soo.IsFinished()) {
-    soo.Step();
-    int samples = soo.num_observations();
-    double regret = Regret(soo);
+  //Record initial regret
+  int samples = soo->num_observations();
+  double regret = Regret(*soo);
+  run_regrets.push_back(std::make_pair(samples, regret));
+
+  while (!soo->IsFinished()) {
+    soo->Step();
+    int samples = soo->num_observations();
+    double regret = Regret(*soo);
     run_regrets.push_back(std::make_pair(samples, regret));
   }
 
@@ -71,12 +81,12 @@ std::vector<double> SOOHarness::DenseValues(std::vector<std::tuple<int, double>>
   std::vector<double> result(max_samples);
   auto reg_entry = regrets.begin();
   double val = std::numeric_limits<double>::quiet_NaN();
-  for (int i = 0; i < max_samples; i++) {
+  for (int i = 1; i <= max_samples; i++) {
     while (reg_entry != regrets.end() && i == std::get<0>(*reg_entry)) {
       val = std::get<1>(*reg_entry);
       reg_entry++;
     }
-    result[i] = val;
+    result[i-1] = val;
   }
   return result;
 } /* DenseRegrets() */

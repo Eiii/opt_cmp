@@ -18,7 +18,7 @@ void SequentialHarness::Evaluate(int max_samples, int iterations)
   for (int i = 0; i < iterations; i++) {
     RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
     SingleRun(rand_seed(), max_samples);
-    if ((i+1) % 25 == 0) {
+    if ((i+1) % 5 == 0) {
       std::cout << "Finished iteration " << (i+1) << std::endl;
       std::cout.flush();
     }
@@ -33,8 +33,14 @@ void SequentialHarness::SingleRun(int run_seed, int max_samples)
   InitEvaluation(run_seed, max_samples);
 
   //No regret associated with the initial samples-- just put in NaN
-  for (int i = 0; i < init_samples_; i++) {
+  for (int i = 0; i < init_samples_-1; i++) {
     run_regrets.push_back(std::numeric_limits<double>::quiet_NaN());
+  }
+
+  //Record the 'initial' regret before the optimization starts.
+  if (init_samples_ > 0) {
+    auto regret = Regret(BestCurrent());
+    run_regrets.push_back(regret);
   }
 
   for (int i = init_samples_; i < max_samples; i++) {
