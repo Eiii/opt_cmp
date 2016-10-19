@@ -2,6 +2,22 @@
 
 #include "common.h"
 
+using std::vector;
+
+//Anonymous namespace for helper functions
+namespace {
+
+void add_node_points(const std::vector<logo::Node>& nodes, 
+                     vector<vector<vector<double>>>* points)
+{
+  vector<vector<double>> pts;
+  for (const auto& node : nodes) {
+    pts.push_back(vectord_to_vector(node.Center()));
+  }
+  points->push_back(pts);
+} /* add_node_points() */
+}
+
 /*********************************************************************
 * SOOHarness Class
 *********************************************************************/
@@ -21,6 +37,7 @@ void SOOHarness::Evaluate(int max_samples, int iterations)
 void SOOHarness::OutputData(nlohmann::json* j)
 {
   OutputRegrets(j);
+  OutputPoints(j);
 } /* OutputData() */
 
 void SOOHarness::OutputHeader(nlohmann::json* j)
@@ -44,25 +61,28 @@ std::unique_ptr<logo::RandomSOO> SOOHarness::CreateOptimizer(int run_seed, int m
 
 void SOOHarness::SingleRun(int run_seed, int max_samples)
 {
-  std::vector<std::tuple<int, double>> run_regrets;
-  std::vector<std::tuple<int, double>> run_ws;
+  vector<std::tuple<int, double>> run_regrets;
+  vector<vector<vector<double>>> run_points;
 
   auto soo = CreateOptimizer(run_seed, max_samples);
 
-  //Record initial regret
+  //Record initial regret & points
   int samples = soo->num_observations();
   double regret = Regret(*soo);
   run_regrets.push_back(std::make_pair(samples, regret));
+  add_node_points(soo->step_observed_nodes(), &run_points);
 
   while (!soo->IsFinished()) {
     soo->Step();
     int samples = soo->num_observations();
     double regret = Regret(*soo);
     run_regrets.push_back(std::make_pair(samples, regret));
+    add_node_points(soo->step_observed_nodes(), &run_points);
   }
 
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(DenseValues(run_regrets, max_samples));
+  all_points_.push_back(run_points);
 }
 
 double SOOHarness::Regret(const logo::RandomSOO& soo) const
@@ -75,6 +95,11 @@ void SOOHarness::OutputRegrets(nlohmann::json* j) const
 {
   (*j)["REGRETS"] = all_regrets_;
 } /* OutputRegrets() */
+
+void SOOHarness::OutputPoints(nlohmann::json* j) const
+{
+  (*j)["POINTS"] = all_points_;
+} /* OutputPoints() */
 
 std::vector<double> SOOHarness::DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples)
 {

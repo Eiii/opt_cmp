@@ -3,8 +3,8 @@
 
 using std::get;
 
-BOHarness::BOHarness(const Function& fn, int seed, BOParams params) :
-    SequentialHarness("BO1", fn, seed, get<4>(params)), 
+BOHarness::BOHarness(const Function& fn, int seed, BOParams params, std::string name) :
+    SequentialHarness(name, fn, seed, get<4>(params)), 
     criteria_(get<0>(params)),
     kernel_(get<1>(params)),
     surrogate_(get<2>(params)),
@@ -48,7 +48,7 @@ void BOHarness::OutputHeader(nlohmann::json* j)
   ss << "it_relearn:" << it_relearn_ << ",";
   ss << "init_samples:" << init_samples_ << ",";
   (*j)["VERSION"] = ss.str();
-} /* OutputData() */
+} /* OutputHeader() */
 
 bopt_params BOHarness::CreateParameters(int seed, int iterations)
 {

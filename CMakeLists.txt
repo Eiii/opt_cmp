@@ -11,7 +11,7 @@ project( ${PROJ_NAME} )
 
 #set( Boost_NO_BOOST_CMAKE TRUE )
 #add_subdirectory( bayesopt )
-set( BAYESOPT_INCLUDES "bayesopt/include" "bayesopt/utils" )
+set( BAYESOPT_INCLUDES "cpplogo2/bayesopt/include" "cpplogo2/bayesopt/utils" )
 
 add_subdirectory( cpplogo2 )
 set( CPPLOGO_INCLUDES "cpplogo2/include" )

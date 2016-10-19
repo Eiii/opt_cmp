@@ -12,8 +12,8 @@ class BOHarness : public SequentialHarness
     using BOParams = std::tuple<std::string, std::string, std::string, int, int>;
   public:
     BOHarness(const Function& fn, int seed, 
-              BOParams params = BOParams("cEI", "kSEISO", "sGaussianProcessML", 15, 2)
-             );
+              BOParams params = BOParams("cEI", "kSEISO", "sGaussianProcessML", 15, 2),
+              std::string name = "BO1");
     virtual ~BOHarness() = default;
 
   protected:

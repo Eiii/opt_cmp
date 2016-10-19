@@ -21,8 +21,10 @@ class SOOHarness : public Harness
     void SingleRun(int run_seed, int max_samples);
     double Regret(const logo::RandomSOO& logo) const;
     void OutputRegrets(nlohmann::json* j) const;
+    void OutputPoints(nlohmann::json* j) const;
     std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);
 
   protected:
     std::vector<std::vector<double>> all_regrets_;
+    std::vector<std::vector<std::vector<std::vector<double>>>> all_points_;
 };

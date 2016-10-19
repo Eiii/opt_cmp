@@ -8,6 +8,7 @@
 
 #include "functions.h"
 #include "boharness.h"
+#include "fixedboharness.h"
 #include "sooharness.h"
 #include "logoharness.h"
 #include "bamsooharness.h"
@@ -15,7 +16,7 @@
 
 #include "cpplogo2/logging.h" //TODO: This is just so we can disable logging!
 
-constexpr int SAMPLES = 10;
+constexpr int SAMPLES = 50;
 constexpr int MAIN_SEED = 1337;
 
 std::vector<const Function*> all_functions = { 
@@ -52,11 +53,18 @@ void comp()
     harness.OutputResult(&json);
   }
   for (const auto& fn : functions) {
+    FixedBOHarness harness(*fn, MAIN_SEED);
+    std::cout << harness.name() << " / " << fn->name << std::endl;
+    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
+    harness.OutputResult(&json);
+  }
+  for (const auto& fn : functions) {
     SOOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&json);
   }
+  /*
   for (const auto& fn : functions) {
     LOGOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
@@ -75,6 +83,7 @@ void comp()
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&json);
   }
+  */
   of << std::setw(4) << json;
   of.close();
 }
