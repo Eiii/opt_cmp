@@ -5,8 +5,8 @@
 /*********************************************************************
 * SOOHarness Class
 *********************************************************************/
-SOOHarness::SOOHarness(const Function& fn, int seed) :
-    Harness("SOO", fn, seed), all_regrets_()
+SOOHarness::SOOHarness(const Function& fn, int seed, std::string name) :
+    Harness(name, fn, seed), all_regrets_()
 {
 } /* SOOHarness() */
 
@@ -72,7 +72,7 @@ std::vector<double> SOOHarness::DenseValues(std::vector<std::tuple<int, double>>
   auto reg_entry = regrets.begin();
   double val = std::numeric_limits<double>::quiet_NaN();
   for (int i = 0; i < max_samples; i++) {
-    if (reg_entry != regrets.end() && i == std::get<0>(*reg_entry)) {
+    while (reg_entry != regrets.end() && i == std::get<0>(*reg_entry)) {
       val = std::get<1>(*reg_entry);
       reg_entry++;
     }

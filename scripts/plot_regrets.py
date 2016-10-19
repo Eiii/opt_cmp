@@ -8,7 +8,7 @@ import numpy as np
 import sys
 import os
 import functools
-from parse import load_data
+from parse import load_data, load_all, remove_data
 from math import isnan
 
 ### Globals?
@@ -55,12 +55,32 @@ def data_for_fn(goal_fn, data):
 def data_filter(data, goal_fn, dtype):
   return {alg: v[dtype] for ((fn, alg), v) in data.iteritems() if fn == goal_fn and dtype in v}
 
-def plot_vals_err(fn, regrets, ylabel="Regret", log_scale=False, ymax_dict={}):
+def plot_vals(fn, regrets, ylabel="Regret", log_scale=False, ymax_dict={}, max_samples=200):
   ax = plt.gca()
   lcl_data = {k: (list_avg(v), list_std(v)) for (k, v) in regrets.iteritems()}
   for (name, (reg, err)) in lcl_data.iteritems():
-    reg = reg[:100]
-    err = err[:100]
+    reg = reg[:max_samples]
+    x = range(len(reg))
+    ax.plot(x, reg, label=name)
+  plt.legend()
+  plt.title(fn)
+  plt.xlabel('Function evaluations')
+  plt.ylabel(ylabel)
+
+  if log_scale:
+    plt.yscale('log', nonposy='clip')
+  else:
+    _, ymax = plt.ylim()
+    if fn in ymax_dict:
+      ymax = ymax_dict[fn]
+    plt.ylim((-0.1,ymax))
+
+def plot_vals_err(fn, regrets, ylabel="Regret", log_scale=False, ymax_dict={}, max_samples=200):
+  ax = plt.gca()
+  lcl_data = {k: (list_avg(v), list_std(v)) for (k, v) in regrets.iteritems()}
+  for (name, (reg, err)) in lcl_data.iteritems():
+    reg = reg[:max_samples]
+    err = err[:max_samples]
     x = range(len(reg))
     err_top = [a+b for a,b in zip(reg, err)]
     err_bot = [a-b for a,b in zip(reg, err)]
@@ -131,15 +151,19 @@ def plot_singles(fn, top, bot, bottom_log=True):
   plt.xlabel('Function Evaluations')
 
 def output_all_regrets():
-  use_log_scale = True
+  use_log_scale = False
   ymax_dict = {'rosenbrock_2' : 4 }
   data = load_all(os.getenv("HOME")+"/data/10-10")
+  data = load_all(os.getenv("HOME")+"/data/10-17", data)
+  data = remove_data(data, ["POI"])
+  #data = load_data("output.json")
 
   for fn in all_fns(data):
     print "Plotting",fn
     regrets = data_filter(data, fn, REGRETS)
     plt.clf()
-    plot_vals_err(fn, regrets, log_scale=use_log_scale)
+    #plot_vals_err(fn, regrets, log_scale=use_log_scale)
+    plot_vals(fn, regrets, log_scale=use_log_scale, max_samples=200)
     out_name = fn+'_regrets.png'
     plt.gcf().set_size_inches(15, 10)
     plt.savefig(out_name, dpi=100, bbox_inches='tight')
@@ -208,14 +232,6 @@ def main():
   data = load_data("output.json")
   d = data_for_fn('hartman_3', data)['BO1']
   print d
-
-def load_all(path):
-  data = None
-  files = [f for f in os.listdir(path) if ".out" in f]
-  for f in files:
-    filepath = os.path.join(path, f)
-    data = load_data(filepath, data)
-  return data
 
 if __name__ == "__main__":
   #main()

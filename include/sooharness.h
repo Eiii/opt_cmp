@@ -6,7 +6,7 @@
 class SOOHarness : public Harness
 {
   public:
-    SOOHarness(const Function& fn, int seed);
+    SOOHarness(const Function& fn, int seed, std::string name="SOO");
     virtual ~SOOHarness() = default;
 
   public:
@@ -15,7 +15,9 @@ class SOOHarness : public Harness
     void OutputHeader(nlohmann::json* j) override;
 
   protected:
-    void SingleRun(int run_seed, int max_samples);
+    virtual void SingleRun(int run_seed, int max_samples);
+
+  protected:
     double Regret(const logo::RandomSOO& logo) const;
     void OutputRegrets(nlohmann::json* j) const;
     std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);

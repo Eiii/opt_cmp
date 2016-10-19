@@ -27,7 +27,6 @@ class SequentialHarness : public Harness
     virtual vectord BestCurrent() = 0;
 
   protected:
-    const int num_data_sections_;
     const int init_samples_;
     std::vector<std::vector<double>> all_regrets_;
     std::vector<std::vector<double>> all_dists_;

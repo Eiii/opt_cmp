@@ -6,7 +6,6 @@
 SequentialHarness::SequentialHarness(std::string name, const Function& fn, 
                                      int seed, int init_samples) :
     Harness(name, fn, seed), 
-    num_data_sections_(2),
     init_samples_(init_samples),
     all_regrets_(), 
     all_dists_(),

@@ -9,6 +9,8 @@
 #include "functions.h"
 #include "boharness.h"
 #include "sooharness.h"
+#include "logoharness.h"
+#include "bamsooharness.h"
 #include "randomharness.h"
 
 #include "cpplogo2/logging.h" //TODO: This is just so we can disable logging!
@@ -57,6 +59,18 @@ void comp()
   }
   for (const auto& fn : functions) {
     SOOHarness harness(*fn, MAIN_SEED);
+    std::cout << harness.name() << " / " << fn->name << std::endl;
+    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
+    harness.OutputResult(&json);
+  }
+  for (const auto& fn : functions) {
+    LOGOHarness harness(*fn, MAIN_SEED);
+    std::cout << harness.name() << " / " << fn->name << std::endl;
+    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
+    harness.OutputResult(&json);
+  }
+  for (const auto& fn : functions) {
+    BaMSOOHarness harness(*fn, MAIN_SEED);
     std::cout << harness.name() << " / " << fn->name << std::endl;
     harness.Evaluate(SAMPLES, NUM_ITERATIONS);
     harness.OutputResult(&json);
@@ -128,6 +142,28 @@ HarnessPtr create_soo(int seed, const Function& fn, ArgDeque* args)
   return soo;
 }
 
+HarnessPtr create_logo(int seed, const Function& fn, ArgDeque* args) 
+{
+  if (args->size() != 0) {
+    throw std::invalid_argument("Bad number of algorithm arguments.");
+  }
+  std::cout << "LOGO" << std::endl;
+  std::unique_ptr<Harness> logo;
+  logo.reset(new LOGOHarness(fn, seed));
+  return logo;
+}
+
+HarnessPtr create_bamsoo(int seed, const Function& fn, ArgDeque* args) 
+{
+  if (args->size() != 0) {
+    throw std::invalid_argument("Bad number of algorithm arguments.");
+  }
+  std::cout << "BAMSOO" << std::endl;
+  std::unique_ptr<Harness> bamsoo;
+  bamsoo.reset(new BaMSOOHarness(fn, seed));
+  return bamsoo;
+}
+
 HarnessPtr create_random(int seed, const Function& fn, ArgDeque* args) 
 {
   if (args->size() != 0) {
@@ -149,6 +185,12 @@ HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args)
     return create_bo(seed, fn, args);
   } else if (alg_name == "RANDOM") {
     return create_random(seed, fn, args);
+  } else if (alg_name == "SOO") {
+    return create_soo(seed, fn, args);
+  } else if (alg_name == "LOGO") {
+    return create_logo(seed, fn, args);
+  } else if (alg_name == "BAMSOO") {
+    return create_bamsoo(seed, fn, args);
   } else {
     throw std::invalid_argument("Unknown algorithm");
   }
