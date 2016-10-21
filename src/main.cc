@@ -140,6 +140,38 @@ HarnessPtr create_bo(int seed, const Function& fn,
   return bo;
 }
 
+HarnessPtr create_fixed_bo(int seed, const Function& fn, 
+                                   ArgDeque* args) 
+{
+  if (args->size() < 4) {
+    throw std::invalid_argument("Bad number of algorithm arguments.");
+  }
+
+  //Criteria
+  std::string crit = args->front();
+  args->pop_front();
+
+  //Kernel
+  std::string kernel = args->front();
+  args->pop_front();
+
+  //Surrogate
+  std::string surr = args->front();
+  args->pop_front();
+
+  //Relearn #
+  int relearn = std::stoi(args->front());
+  args->pop_front();
+
+  //Parameters
+  auto params = FixedBOHarness::FixedBOParams(crit, kernel, surr, relearn);
+
+  std::cout << "FIXEDBO" << std::endl;
+  std::unique_ptr<Harness> bo;
+  bo.reset(new FixedBOHarness(fn, seed, params));
+  return bo;
+}
+
 HarnessPtr create_soo(int seed, const Function& fn, ArgDeque* args) 
 {
   if (args->size() != 0) {
@@ -192,6 +224,8 @@ HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args)
   std::cout << "Alg: ";
   if (alg_name == "BO1") {
     return create_bo(seed, fn, args);
+  } else if (alg_name == "FIXEDBO1") {
+    return create_fixed_bo(seed, fn, args);
   } else if (alg_name == "RANDOM") {
     return create_random(seed, fn, args);
   } else if (alg_name == "SOO") {
