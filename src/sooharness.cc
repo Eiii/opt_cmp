@@ -59,6 +59,11 @@ std::unique_ptr<logo::RandomSOO> SOOHarness::CreateOptimizer(int run_seed, int m
   return std::unique_ptr<logo::RandomSOO>(new logo::RandomSOO(options));
 } /* CreateOptimizer() */
 
+int SOOHarness::GetNumSamples(const logo::RandomSOO* soo) const
+{
+  return soo->num_observations();
+} /* PrepareRunRegrets() */
+
 void SOOHarness::SingleRun(int run_seed, int max_samples)
 {
   vector<std::tuple<int, double>> run_regrets;
@@ -67,14 +72,14 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   auto soo = CreateOptimizer(run_seed, max_samples);
 
   //Record initial regret & points
-  int samples = soo->num_observations();
+  int samples = GetNumSamples(soo.get());
   double regret = Regret(*soo);
   run_regrets.push_back(std::make_pair(samples, regret));
   add_node_points(soo->step_observed_nodes(), &run_points);
 
   while (!soo->IsFinished()) {
     soo->Step();
-    int samples = soo->num_observations();
+    int samples = GetNumSamples(soo.get());
     double regret = Regret(*soo);
     run_regrets.push_back(std::make_pair(samples, regret));
     add_node_points(soo->step_observed_nodes(), &run_points);

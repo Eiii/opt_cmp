@@ -25,9 +25,15 @@ def modify_name(name, version):
     info_dict = {}
     for k,v in [x.split(":") for x in info]:
       info_dict[k] = v 
-
-    info_str = "-".join(['', info_dict["crit"], info_dict["kernel"]])
+    info_str = "-".join(['', info_dict["crit"], info_dict["kernel"], info_dict["init_samples"]])
     return name[:-1]+info_str
+  elif name == "InitBaMSOO":
+    info=version.split(",")[1:]
+    info_dict = {}
+    for k,v in [x.split(":") for x in info]:
+      info_dict[k] = v 
+    info_str = "-".join(['', info_dict["init_sapmles"]])
+    return name+info_str
   else:
     return name
 

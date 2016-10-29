@@ -153,9 +153,9 @@ def plot_singles(fn, top, bot, bottom_log=True):
 def output_all_regrets():
   use_log_scale = False
   ymax_dict = {'rosenbrock_2' : 4 }
-  data = load_all(os.getenv("HOME")+"/data/10-10")
-  data = load_all(os.getenv("HOME")+"/data/10-17", data)
-  data = remove_data(data, ["POI"])
+  data = None
+  #data = load_all(os.getenv("HOME")+"/data/10-25-boinit")
+  data = load_all(os.getenv("HOME")+"/data/10-26-bamsoo-init", data)
   #data = load_data("output.json")
 
   for fn in all_fns(data):

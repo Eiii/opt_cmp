@@ -21,9 +21,14 @@ void InitBaMSOOHarness::OutputHeader(nlohmann::json* j)
   ss << "# ";
   ss << "v1,";
   ss << "seed:" << seed_ << ",";
-  ss << "init_sapmles:" << init_samples_;
+  ss << "init_samples:" << init_samples_;
   (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
+
+int InitBaMSOOHarness::GetNumSamples(const logo::RandomSOO* soo) const
+{
+  return SOOHarness::GetNumSamples(soo)+init_samples_;
+} /* PrepareRunRegrets() */
 
 std::unique_ptr<logo::RandomSOO> InitBaMSOOHarness::CreateOptimizer(int run_seed, int max_samples) const
 {

@@ -16,6 +16,7 @@ class SOOHarness : public Harness
 
   protected:
     virtual std::unique_ptr<logo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const;
+    virtual int GetNumSamples(const logo::RandomSOO* soo) const;
 
   protected:
     void SingleRun(int run_seed, int max_samples);

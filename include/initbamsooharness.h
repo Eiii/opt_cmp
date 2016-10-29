@@ -11,6 +11,7 @@ class InitBaMSOOHarness : public SOOHarness
 
   public:
     void OutputHeader(nlohmann::json* j) override;
+    int GetNumSamples(const logo::RandomSOO* soo) const override;
 
   protected:
     std::unique_ptr<logo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const override;
