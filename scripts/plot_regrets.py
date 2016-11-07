@@ -8,7 +8,7 @@ import numpy as np
 import sys
 import os
 import functools
-from parse import load_data, load_all, remove_data
+from parse import load_data, load_all, filter_algs
 from math import isnan
 
 ### Globals?
@@ -62,7 +62,7 @@ def plot_vals(fn, regrets, ylabel="Regret", log_scale=False, ymax_dict={}, max_s
     reg = reg[:max_samples]
     x = range(len(reg))
     ax.plot(x, reg, label=name)
-  plt.legend()
+  plt.legend(loc=0)
   plt.title(fn)
   plt.xlabel('Function evaluations')
   plt.ylabel(ylabel)
@@ -154,9 +154,10 @@ def output_all_regrets():
   use_log_scale = False
   ymax_dict = {'rosenbrock_2' : 4 }
   data = None
-  #data = load_all(os.getenv("HOME")+"/data/10-25-boinit")
-  data = load_all(os.getenv("HOME")+"/data/10-26-bamsoo-init", data)
-  #data = load_data("output.json")
+  data = load_all(os.getenv("HOME")+"/data/10-25-boinit", data)
+  data = filter_algs(data, ['cLCB'])
+  data = filter_algs(data, ['kSEARD'])
+  #data = load_all(os.getenv("HOME")+"/data/10-31-bamsoo-init", data)
 
   for fn in all_fns(data):
     print "Plotting",fn

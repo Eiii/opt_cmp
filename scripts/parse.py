@@ -32,7 +32,7 @@ def modify_name(name, version):
     info_dict = {}
     for k,v in [x.split(":") for x in info]:
       info_dict[k] = v 
-    info_str = "-".join(['', info_dict["init_sapmles"]])
+    info_str = "-".join(['', info_dict["init_samples"]])
     return name+info_str
   else:
     return name
@@ -61,8 +61,8 @@ def load_all(path, data=None):
     data = load_data(filepath, data)
   return data
 
-def remove_data(data, fns):
-  return {k:data[k] for k in data if not any([x in k[1] for x in fns])}
+def filter_algs(data, algs):
+  return {k:data[k] for k in data if any([x in k[1] for x in algs])}
 
 def main():
   data = load_data("output.json")
