@@ -29,6 +29,7 @@ class SequentialHarness : public Harness
   protected:
     const int init_samples_;
     std::vector<std::vector<double>> all_regrets_;
+    std::vector<std::vector<double>> all_simple_regrets_;
     std::vector<std::vector<double>> all_dists_;
     std::vector<std::vector<std::vector<double>>> all_points_;
 };
