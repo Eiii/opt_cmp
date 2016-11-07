@@ -1,5 +1,5 @@
 #include "fixedboharness.h"
-#include "cpplogo2/randomsoo.h"
+#include "cpplogo/randomsoo.h"
 #include "common.h"
 
 using std::get;
@@ -20,8 +20,8 @@ void FixedBOHarness::InitEvaluation(int run_seed, int max_samples)
   //from SOO
   
   vecOfvec xs; std::vector<double> ys;
-  logo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
-  logo::RandomSOO soo(options);
+  cpplogo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
+  cpplogo::RandomSOO soo(options);
 
   //First observation
   auto last = soo.step_observed_nodes();

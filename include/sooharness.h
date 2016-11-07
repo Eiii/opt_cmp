@@ -1,7 +1,7 @@
 #pragma once
 
 #include "harness.h"
-#include "cpplogo2/randomsoo.h"
+#include "cpplogo/randomsoo.h"
 
 class SOOHarness : public Harness
 {
@@ -15,12 +15,12 @@ class SOOHarness : public Harness
     void OutputHeader(nlohmann::json* j) override;
 
   protected:
-    virtual std::unique_ptr<logo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const;
-    virtual int GetNumSamples(const logo::RandomSOO* soo) const;
+    virtual std::unique_ptr<cpplogo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const;
+    virtual int GetNumSamples(const cpplogo::RandomSOO* soo) const;
 
   protected:
     void SingleRun(int run_seed, int max_samples);
-    double Regret(const logo::RandomSOO& logo) const;
+    double Regret(const cpplogo::RandomSOO& logo) const;
     void OutputRegrets(nlohmann::json* j) const;
     void OutputPoints(nlohmann::json* j) const;
     std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);

@@ -25,13 +25,13 @@ void InitBaMSOOHarness::OutputHeader(nlohmann::json* j)
   (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
 
-int InitBaMSOOHarness::GetNumSamples(const logo::RandomSOO* soo) const
+int InitBaMSOOHarness::GetNumSamples(const cpplogo::RandomSOO* soo) const
 {
   return SOOHarness::GetNumSamples(soo)+init_samples_;
 } /* PrepareRunRegrets() */
 
-std::unique_ptr<logo::RandomSOO> InitBaMSOOHarness::CreateOptimizer(int run_seed, int max_samples) const
+std::unique_ptr<cpplogo::RandomSOO> InitBaMSOOHarness::CreateOptimizer(int run_seed, int max_samples) const
 {
-  logo::RInitBaMSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, init_samples_, run_seed);
-  return std::unique_ptr<logo::RInitBaMSOO>(new logo::RInitBaMSOO(options));
+  cpplogo::InitBaMSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed, init_samples_);
+  return std::unique_ptr<cpplogo::InitBaMSOO>(new cpplogo::InitBaMSOO(options));
 } /* CreateOptimizer() */

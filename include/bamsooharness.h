@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sooharness.h"
-#include "cpplogo2/randombamsoo.h"
+#include "cpplogo/randombamsoo.h"
 
 class BaMSOOHarness : public SOOHarness
 {
@@ -10,5 +10,5 @@ class BaMSOOHarness : public SOOHarness
     virtual ~BaMSOOHarness() = default;
 
   protected:
-    std::unique_ptr<logo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const override;
+    std::unique_ptr<cpplogo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const override;
 };

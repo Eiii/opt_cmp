@@ -14,8 +14,9 @@
 #include "bamsooharness.h"
 #include "initbamsooharness.h"
 #include "randomharness.h"
+#include "bamlogoharness.h"
 
-#include "cpplogo2/logging.h" //TODO: This is just so we can disable logging!
+#include "cpplogo/logging.h" //TODO: This is just so we can disable logging!
 
 constexpr int SAMPLES = 50;
 constexpr int MAIN_SEED = 1337;
@@ -222,6 +223,17 @@ HarnessPtr create_init_bamsoo(int seed, const Function& fn, ArgDeque* args)
   return bamsoo;
 }
 
+HarnessPtr create_bamlogo(int seed, const Function& fn, ArgDeque* args) 
+{
+  if (args->size() != 0) {
+    throw std::invalid_argument("Bad number of algorithm arguments.");
+  }
+  std::cout << "BAMLOGO" << std::endl;
+  std::unique_ptr<Harness> bamlogo;
+  bamlogo.reset(new BaMLOGOHarness(fn, seed));
+  return bamlogo;
+}
+
 HarnessPtr create_random(int seed, const Function& fn, ArgDeque* args) 
 {
   if (args->size() != 0) {
@@ -253,6 +265,8 @@ HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args)
     return create_bamsoo(seed, fn, args);
   } else if (alg_name == "INITBAMSOO") {
     return create_init_bamsoo(seed, fn, args);
+  } else if (alg_name == "BAMLOGO") {
+    return create_bamlogo(seed, fn, args);
   } else {
     throw std::invalid_argument("Unknown algorithm");
   }

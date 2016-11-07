@@ -7,7 +7,7 @@ using std::vector;
 //Anonymous namespace for helper functions
 namespace {
 
-void add_node_points(const std::vector<logo::Node>& nodes, 
+void add_node_points(const std::vector<cpplogo::Node>& nodes, 
                      vector<vector<vector<double>>>* points)
 {
   vector<vector<double>> pts;
@@ -53,13 +53,13 @@ void SOOHarness::OutputHeader(nlohmann::json* j)
   (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
 
-std::unique_ptr<logo::RandomSOO> SOOHarness::CreateOptimizer(int run_seed, int max_samples) const
+std::unique_ptr<cpplogo::RandomSOO> SOOHarness::CreateOptimizer(int run_seed, int max_samples) const
 {
-  logo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
-  return std::unique_ptr<logo::RandomSOO>(new logo::RandomSOO(options));
+  cpplogo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
+  return std::unique_ptr<cpplogo::RandomSOO>(new cpplogo::RandomSOO(options));
 } /* CreateOptimizer() */
 
-int SOOHarness::GetNumSamples(const logo::RandomSOO* soo) const
+int SOOHarness::GetNumSamples(const cpplogo::RandomSOO* soo) const
 {
   return soo->num_observations();
 } /* PrepareRunRegrets() */
@@ -90,7 +90,7 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   all_points_.push_back(run_points);
 }
 
-double SOOHarness::Regret(const logo::RandomSOO& soo) const
+double SOOHarness::Regret(const cpplogo::RandomSOO& soo) const
 {
   double regret = fn_.fn_max - soo.BestNode()->value();
   return regret;

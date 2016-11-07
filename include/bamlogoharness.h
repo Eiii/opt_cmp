@@ -1,13 +1,13 @@
 #pragma once
 
 #include "sooharness.h"
-#include "cpplogo/randomlogo.h"
+#include "cpplogo/randombamlogo.h"
 
-class LOGOHarness : public SOOHarness
+class BaMLOGOHarness : public SOOHarness
 {
   public:
-    LOGOHarness(const Function& fn, int seed);
-    virtual ~LOGOHarness() = default;
+    BaMLOGOHarness(const Function& fn, int seed);
+    virtual ~BaMLOGOHarness() = default;
 
   protected:
     std::unique_ptr<cpplogo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const override;
