@@ -17,10 +17,10 @@ class SOOHarness : public Harness
   protected:
     virtual std::unique_ptr<cpplogo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const;
     virtual int GetNumSamples(const cpplogo::RandomSOO* soo) const;
+    virtual double Regret(const cpplogo::RandomSOO& logo) const;
 
   protected:
     void SingleRun(int run_seed, int max_samples);
-    double Regret(const cpplogo::RandomSOO& logo) const;
     void OutputRegrets(nlohmann::json* j) const;
     void OutputPoints(nlohmann::json* j) const;
     std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);
