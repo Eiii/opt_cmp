@@ -13,6 +13,7 @@ from math import isnan
 
 ### Globals?
 REGRETS = "REGRETS"
+SIMPLE_REGRETS = "SIMPLE_REGRETS"
 WS = "WS"
 DISTS = "DISTS"
 
@@ -52,8 +53,8 @@ def list_slope(width, l):
 def data_for_fn(goal_fn, data):
   return {alg: v for ((fn, alg), v) in data.iteritems() if fn == goal_fn}
 
-def data_filter(data, goal_fn, dtype):
-  return {alg: v[dtype] for ((fn, alg), v) in data.iteritems() if fn == goal_fn and dtype in v}
+def data_filter(data, goal_fn, dtype, postfix=""):
+  return {alg+postfix: v[dtype] for ((fn, alg), v) in data.iteritems() if fn == goal_fn and dtype in v}
 
 def plot_vals(fn, regrets, ylabel="Regret", log_scale=False, ymax_dict={}, max_samples=200):
   ax = plt.gca()
@@ -151,17 +152,20 @@ def plot_singles(fn, top, bot, bottom_log=True):
   plt.xlabel('Function Evaluations')
 
 def output_all_regrets():
-  use_log_scale = False
+  use_log_scale = True
   ymax_dict = {'rosenbrock_2' : 4 }
-  data = None
-  data = load_all(os.getenv("HOME")+"/data/10-25-boinit", data)
-  data = filter_algs(data, ['cLCB'])
-  data = filter_algs(data, ['kSEARD'])
-  #data = load_all(os.getenv("HOME")+"/data/10-31-bamsoo-init", data)
+  #data = load_all(os.getenv("HOME")+"/data/11-14-bamsoo-init-regret-PARTIAL")
+  #bo_data = load_all(os.getenv("HOME")+"/data/11-14-bo-simple")
+  #bo_data = filter_algs(bo_data, ['cLCB'])
+  #bo_data = filter_algs(bo_data, ['kSEARD'])
+  data = load_all(os.getenv("HOME")+"/data/10-17")
+  data = load_all(os.getenv("HOME")+"/data/11-14-bamlogo", data)
 
   for fn in all_fns(data):
     print "Plotting",fn
     regrets = data_filter(data, fn, REGRETS)
+    #simple_regrets = data_filter(bo_data, fn, SIMPLE_REGRETS, "-simple")
+    #regrets.update(simple_regrets)
     plt.clf()
     #plot_vals_err(fn, regrets, log_scale=use_log_scale)
     plot_vals(fn, regrets, log_scale=use_log_scale, max_samples=200)
