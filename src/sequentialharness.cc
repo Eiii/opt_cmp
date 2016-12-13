@@ -15,6 +15,7 @@ SequentialHarness::SequentialHarness(std::string name, const Function& fn,
 
 void SequentialHarness::Evaluate(int max_samples, int iterations)
 {
+  Harness::Evaluate(max_samples, iterations);
   for (int i = 0; i < iterations; i++) {
     try {
       RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
@@ -49,6 +50,7 @@ void SequentialHarness::SingleRun(int run_seed, int max_samples)
     run_regrets.push_back(regret);
   }
 
+  timer_.Start();
   for (int i = init_samples_; i < max_samples; i++) {
     auto last = SingleStep();
     run_points.push_back(last);
@@ -66,6 +68,7 @@ void SequentialHarness::SingleRun(int run_seed, int max_samples)
     }
     run_simple_regrets.push_back(best_simple);
   }
+  timer_.Stop();
 
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(run_regrets);

@@ -17,6 +17,8 @@
 #include "randomharness.h"
 #include "bamlogoharness.h"
 
+#include "timer.h"
+
 #include "cpplogo/logging.h" //TODO: This is just so we can disable logging!
 
 constexpr int SAMPLES = 500000;
@@ -35,6 +37,8 @@ std::vector<const Function*> all_functions = {
   &f_rosenbrock_10
 };
 
+std::vector<const Function*> all_timer_functions;
+
 std::vector<const Function*> functions = { 
   &f_rosenbrock_2,
   &f_hartman_3,
@@ -44,49 +48,26 @@ std::vector<const Function*> functions = {
   */
 };
 
-Function lipschitz(const Function* fn)
-{
-  Function lp_fn = *fn;
-
-  ObjectiveFn obj = fn->fn;
-  vectord max_loc = vector_to_vectord(fn->max_loc);
-  double max_val = fn->fn_max;
-  ObjectiveFn lp_obj = [obj, max_loc, max_val](const vectord& x) -> double {
-    double ydist = std::fabs(obj(x) - max_val);
-    double sum = 0.0;
-    for (size_t i = 0; i < x.size(); i++) {
-      sum += std::pow(x[i] - max_loc[i], 2.0);  
-    }
-    double xdist = std::sqrt(sum);
-    return ydist/xdist;
-  };
-
-  lp_fn.fn = lp_obj;
-  lp_fn.fn_max = 0.0;
-  lp_fn.max_loc.clear();
-  return lp_fn;
-}
-
-void run_soo(const Function* fn)
-{
-  cpplogo::RandomSOO::Options opt(fn->fn, fn->dim, SAMPLES, 3, MAIN_SEED);
-  auto soo = std::unique_ptr<cpplogo::RandomSOO>(new cpplogo::RandomSOO(opt));
-  soo->Optimize();
-  auto result = soo->BestNode();
-  std::cout << result->value() << std::endl;
-  std::cout << result->Center() << std::endl;
-}
-
 void comp() 
 {
-  for (const auto& fn : functions) {
-    Function lp = lipschitz(fn);
-    /*
-    std::cout << fn->name << std::endl;
-    run_soo(fn);
-    */
-    std::cout << fn->name << " - LP" << std::endl;
-    run_soo(&lp);
+  for (const auto& fn : all_timer_functions) {
+    objective_timer.Reset();
+    SOOHarness soo(*fn, MAIN_SEED);
+    soo.Evaluate(100, 100);
+    double ot = objective_timer.ElapsedTime();
+    double tt = soo.timer().ElapsedTime();
+    double at = tt - ot;
+    std::cout << fn->name << ": " << ot/1e6 << " ";
+    std::cout << at/1e6 << " " << ot/tt << std::endl;
+  }
+}
+
+void generate_timer_functions()
+{
+  for (const auto& fn : all_functions) {
+    Function* new_fn = new Function(*fn);
+    new_fn->fn = add_timer(fn->fn);
+    all_timer_functions.push_back(new_fn);
   }
 }
 
@@ -308,6 +289,7 @@ ArgsResult parse_args(int argc, const char* argv[])
 
 int main(int argc, const char* argv[]) 
 {
+  generate_timer_functions();
   if (argc == 1) {
     comp();
   } else {

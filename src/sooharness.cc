@@ -28,6 +28,7 @@ SOOHarness::SOOHarness(const Function& fn, int seed, std::string name) :
 
 void SOOHarness::Evaluate(int max_samples, int iterations)
 {
+  Harness::Evaluate(max_samples, iterations);
   for (int i = 0; i < iterations; i++) {
     RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
     SingleRun(rand_seed(), max_samples);
@@ -77,6 +78,7 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   run_regrets.push_back(std::make_pair(samples, regret));
   add_node_points(soo->step_observed_nodes(), &run_points);
 
+  timer_.Start();
   while (!soo->IsFinished()) {
     soo->Step();
     int samples = GetNumSamples(soo.get());
@@ -84,6 +86,7 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
     run_regrets.push_back(std::make_pair(samples, regret));
     add_node_points(soo->step_observed_nodes(), &run_points);
   }
+  timer_.Stop();
 
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(DenseValues(run_regrets, max_samples));

@@ -2,6 +2,7 @@
 
 #include "types.h"
 #include "json.hpp"
+#include "timer.h"
 
 #include <fstream>
 
@@ -12,17 +13,19 @@ class Harness
     virtual ~Harness() = default;
 
   public:
-    virtual void Evaluate(int max_samples, int iterations) = 0;
+    virtual void Evaluate(int max_samples, int iterations);
     void OutputResult(nlohmann::json* json);
     virtual void OutputData(nlohmann::json* json) = 0;
     virtual void OutputHeader(nlohmann::json* json) = 0;
 
   public:
     const std::string& name() const { return name_; } 
+    const CPUTimer& timer() const { return timer_; }
 
   protected:
     RandomEngine rng_;
     const int seed_;
     const std::string name_;
     const Function& fn_;
+    CPUTimer timer_;
 };

@@ -11,9 +11,12 @@ class CPUTimer
   public:
     void Start();
     void Stop();
-    double ElapsedTime();
+    void Reset();
+    double ElapsedTime() const;
 
   protected:
     bool is_running;
+    bool has_started;
     struct rusage start_ru; 
+    double total_time;
 };

@@ -1,9 +1,16 @@
 #pragma once
 #include <cmath>
 #include "types.h"
+#include "timer.h"
 
 matrixd set_matrix(size_t rows, size_t cols, const std::vector<double>& vec);
 vectord set_vector(const std::vector<double>& vec);
+
+/***********************************************************
+* Timer
+***********************************************************/
+extern CPUTimer objective_timer;
+ObjectiveFn add_timer(const ObjectiveFn& fn);
 
 /***********************************************************
 * sin

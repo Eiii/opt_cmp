@@ -1,5 +1,19 @@
 #include "functions.h"
 
+CPUTimer objective_timer;
+
+ObjectiveFn add_timer(const ObjectiveFn& fn)
+{
+  CPUTimer* timer_ptr = &objective_timer;
+  auto new_fn = [timer_ptr, fn](const vectord& in) {
+    timer_ptr->Start();
+    auto result = fn(in);
+    timer_ptr->Stop();
+    return result;
+  };
+  return new_fn;
+}
+
 matrixd set_matrix(size_t rows, size_t cols, const std::vector<double>& vec)
 {
   matrixd mat(rows, cols);
