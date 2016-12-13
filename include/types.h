@@ -32,5 +32,5 @@ struct Function {
   int dim;
   ObjectiveFn fn;
   double fn_max;
-  //max location?
+  std::vector<double> max_loc;
 };

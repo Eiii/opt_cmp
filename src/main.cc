@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "functions.h"
+#include "common.h"
 #include "boharness.h"
 #include "fixedboharness.h"
 #include "sooharness.h"
@@ -18,7 +19,7 @@
 
 #include "cpplogo/logging.h" //TODO: This is just so we can disable logging!
 
-constexpr int SAMPLES = 50;
+constexpr int SAMPLES = 500000;
 constexpr int MAIN_SEED = 1337;
 
 std::vector<const Function*> all_functions = { 
@@ -43,51 +44,50 @@ std::vector<const Function*> functions = {
   */
 };
 
+Function lipschitz(const Function* fn)
+{
+  Function lp_fn = *fn;
+
+  ObjectiveFn obj = fn->fn;
+  vectord max_loc = vector_to_vectord(fn->max_loc);
+  double max_val = fn->fn_max;
+  ObjectiveFn lp_obj = [obj, max_loc, max_val](const vectord& x) -> double {
+    double ydist = std::fabs(obj(x) - max_val);
+    double sum = 0.0;
+    for (size_t i = 0; i < x.size(); i++) {
+      sum += std::pow(x[i] - max_loc[i], 2.0);  
+    }
+    double xdist = std::sqrt(sum);
+    return ydist/xdist;
+  };
+
+  lp_fn.fn = lp_obj;
+  lp_fn.fn_max = 0.0;
+  lp_fn.max_loc.clear();
+  return lp_fn;
+}
+
+void run_soo(const Function* fn)
+{
+  cpplogo::RandomSOO::Options opt(fn->fn, fn->dim, SAMPLES, 3, MAIN_SEED);
+  auto soo = std::unique_ptr<cpplogo::RandomSOO>(new cpplogo::RandomSOO(opt));
+  soo->Optimize();
+  auto result = soo->BestNode();
+  std::cout << result->value() << std::endl;
+  std::cout << result->Center() << std::endl;
+}
+
 void comp() 
 {
-  constexpr int NUM_ITERATIONS = 2;
-  std::ofstream of("output.json");
-  nlohmann::json json = nlohmann::json::array();
   for (const auto& fn : functions) {
-    BOHarness harness(*fn, MAIN_SEED);
-    std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&json);
+    Function lp = lipschitz(fn);
+    /*
+    std::cout << fn->name << std::endl;
+    run_soo(fn);
+    */
+    std::cout << fn->name << " - LP" << std::endl;
+    run_soo(&lp);
   }
-  for (const auto& fn : functions) {
-    FixedBOHarness harness(*fn, MAIN_SEED);
-    std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&json);
-  }
-  for (const auto& fn : functions) {
-    SOOHarness harness(*fn, MAIN_SEED);
-    std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&json);
-  }
-  /*
-  for (const auto& fn : functions) {
-    LOGOHarness harness(*fn, MAIN_SEED);
-    std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&json);
-  }
-  for (const auto& fn : functions) {
-    BaMSOOHarness harness(*fn, MAIN_SEED);
-    std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&json);
-  }
-  for (const auto& fn : functions) {
-    RandomHarness harness(*fn, MAIN_SEED);
-    std::cout << harness.name() << " / " << fn->name << std::endl;
-    harness.Evaluate(SAMPLES, NUM_ITERATIONS);
-    harness.OutputResult(&json);
-  }
-  */
-  of << std::setw(4) << json;
-  of.close();
 }
 
 using ArgDeque = std::deque<const char*>;

@@ -37,6 +37,7 @@ Function f_sin_1 = {
     return sin_helper(i[0]);
   },
   .fn_max = 0.975599,
+  .max_loc = {0.867526}
 };
 
 Function f_sin_2 = {
@@ -47,6 +48,7 @@ Function f_sin_2 = {
     return sin_helper(i[0]) * sin_helper(i[1]);
   },
   .fn_max = 0.9517936893872353,
+  .max_loc = {0.867526, 0.867526}
 };
 
 /***********************************************************
@@ -66,6 +68,7 @@ Function f_peaks = {
     return sum;
   },
   .fn_max = 8.106189094771677,
+  .max_loc = {0.498447,0.763561}
 };
 
 /***********************************************************
@@ -90,6 +93,7 @@ Function f_branin = {
     return -val;
   },
   .fn_max = -0.397887,
+  .max_loc = {0.123894,0.818333}
 };
 
 /***********************************************************
@@ -115,6 +119,7 @@ Function f_rosenbrock_2 = {
     return rosenbrock(i);
   },
   .fn_max = 0.0,
+  .max_loc = {0.4,0.4}
 };
 
 Function f_rosenbrock_10 = {
@@ -125,6 +130,7 @@ Function f_rosenbrock_10 = {
     return rosenbrock(i);
   },
   .fn_max = 0.0,
+  .max_loc = {0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4}
 };
 
 /***********************************************************
@@ -170,6 +176,7 @@ Function f_hartman_3 = {
     return hartman(input, alpha, a3, p3);
   },
   .fn_max = 3.86278,
+  .max_loc = {0.114589,0.555649,0.852547}
 };
 
 Function f_hartman_6 = {
@@ -179,6 +186,7 @@ Function f_hartman_6 = {
     return hartman(input, alpha, a6, p6);
   },
   .fn_max = 3.32237,
+  .max_loc = {0.20169, 0.150011, 0.476874, 0.275332, 0.311652, 0.6573}
 };
 
 /***********************************************************
@@ -212,6 +220,7 @@ Function f_shekel_5 = {
     return shekel(input, 5);
   },
   .fn_max = 10.1532,
+  .max_loc = {0.4, 0.4, 0.4, 0.4}
 };
 
 Function f_shekel_7 = {
@@ -221,6 +230,7 @@ Function f_shekel_7 = {
     return shekel(input, 7);
   },
   .fn_max = 10.4029,
+  .max_loc = {0.4, 0.4, 0.4, 0.4}
 };
 
 Function f_shekel_10 = {
@@ -230,4 +240,5 @@ Function f_shekel_10 = {
     return shekel(input, 10);
   },
   .fn_max = 10.5364,
+  .max_loc = {0.4, 0.4, 0.4, 0.4}
 };

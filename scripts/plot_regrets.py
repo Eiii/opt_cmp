@@ -154,18 +154,18 @@ def plot_singles(fn, top, bot, bottom_log=True):
 def output_all_regrets():
   use_log_scale = True
   ymax_dict = {'rosenbrock_2' : 4 }
-  #data = load_all(os.getenv("HOME")+"/data/11-14-bamsoo-init-regret-PARTIAL")
-  #bo_data = load_all(os.getenv("HOME")+"/data/11-14-bo-simple")
-  #bo_data = filter_algs(bo_data, ['cLCB'])
-  #bo_data = filter_algs(bo_data, ['kSEARD'])
-  data = load_all(os.getenv("HOME")+"/data/10-17")
-  data = load_all(os.getenv("HOME")+"/data/11-14-bamlogo", data)
+  data = load_all(os.getenv("HOME")+"/data/12-5-bamsoo-init-regret")
+  bo_data = load_all(os.getenv("HOME")+"/data/11-14-bo-simple")
+  bo_data = filter_algs(bo_data, ['cLCB'])
+  bo_data = filter_algs(bo_data, ['kSEARD'])
+  #data = load_all(os.getenv("HOME")+"/data/10-17")
+  #data = load_all(os.getenv("HOME")+"/data/11-14-bamlogo", data)
 
   for fn in all_fns(data):
     print "Plotting",fn
     regrets = data_filter(data, fn, REGRETS)
-    #simple_regrets = data_filter(bo_data, fn, SIMPLE_REGRETS, "-simple")
-    #regrets.update(simple_regrets)
+    simple_regrets = data_filter(bo_data, fn, SIMPLE_REGRETS, "-simple")
+    regrets.update(simple_regrets)
     plt.clf()
     #plot_vals_err(fn, regrets, log_scale=use_log_scale)
     plot_vals(fn, regrets, log_scale=use_log_scale, max_samples=200)
