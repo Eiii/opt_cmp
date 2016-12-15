@@ -19,6 +19,8 @@ class SequentialHarness : public Harness
     void OutputData(nlohmann::json* json) override;
     void OutputRegrets(nlohmann::json* json);
     void OutputDists(nlohmann::json* json);
+    void OutputRunTimes(nlohmann::json* json);
+    void OutputObjTimes(nlohmann::json* json);
     void OutputPoints(nlohmann::json* j);
 
   protected:
@@ -31,5 +33,7 @@ class SequentialHarness : public Harness
     std::vector<std::vector<double>> all_regrets_;
     std::vector<std::vector<double>> all_simple_regrets_;
     std::vector<std::vector<double>> all_dists_;
+    std::vector<std::vector<double>> all_run_times_;
+    std::vector<std::vector<double>> all_obj_times_;
     std::vector<std::vector<std::vector<double>>> all_points_;
 };

@@ -51,14 +51,17 @@ std::vector<const Function*> functions = {
 void comp() 
 {
   for (const auto& fn : all_timer_functions) {
-    objective_timer.Reset();
+    std::cout << fn->name << std::endl;
     SOOHarness soo(*fn, MAIN_SEED);
     soo.Evaluate(100, 100);
-    double ot = objective_timer.ElapsedTime();
-    double tt = soo.timer().ElapsedTime();
-    double at = tt - ot;
-    std::cout << fn->name << ": " << ot/1e6 << " ";
-    std::cout << at/1e6 << " " << ot/tt << std::endl;
+
+    std::string out_filename = fn->name + "_soo.out";
+    std::ofstream output;
+    nlohmann::json json;
+    output.open(out_filename);
+    soo.OutputResult(&json);
+    output << std::setw(2) << json;
+    output.close();
   }
 }
 

@@ -9,6 +9,7 @@ SequentialHarness::SequentialHarness(std::string name, const Function& fn,
     init_samples_(init_samples),
     all_regrets_(), 
     all_dists_(),
+    all_run_times_(),
     all_points_()
 {
 } /* SequentialHarness() */
@@ -32,8 +33,12 @@ void SequentialHarness::Evaluate(int max_samples, int iterations)
 
 void SequentialHarness::SingleRun(int run_seed, int max_samples)
 {
+  timer_.Reset();
+  objective_timer.Reset();
   std::vector<double> run_regrets;
   std::vector<double> run_simple_regrets;
+  std::vector<double> run_times;
+  std::vector<double> obj_run_times;
   std::vector<vectord> run_points;
 
   InitEvaluation(run_seed, max_samples);
@@ -50,10 +55,13 @@ void SequentialHarness::SingleRun(int run_seed, int max_samples)
     run_regrets.push_back(regret);
   }
 
-  timer_.Start();
   for (int i = init_samples_; i < max_samples; i++) {
+    timer_.Start();
     auto last = SingleStep();
+    timer_.Stop();
     run_points.push_back(last);
+    run_times.push_back(timer_.ElapsedTime());
+    obj_run_times.push_back(objective_timer.ElapsedTime());
     auto result = BestCurrent();
 
     // Calculate normal regret
@@ -68,12 +76,13 @@ void SequentialHarness::SingleRun(int run_seed, int max_samples)
     }
     run_simple_regrets.push_back(best_simple);
   }
-  timer_.Stop();
 
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(run_regrets);
   all_simple_regrets_.push_back(run_simple_regrets);
   all_dists_.push_back(CalcDist(run_points));
+  all_run_times_.push_back(run_times);
+  all_obj_times_.push_back(obj_run_times);
   all_points_.push_back(vectord_to_vector(run_points));
 }
 
@@ -87,6 +96,8 @@ void SequentialHarness::OutputData(nlohmann::json* j)
 {
   OutputRegrets(j);
   OutputDists(j);
+  OutputRunTimes(j);
+  OutputObjTimes(j);
   OutputPoints(j);
 } /* OutputData() */
 
@@ -99,6 +110,16 @@ void SequentialHarness::OutputRegrets(nlohmann::json* j)
 void SequentialHarness::OutputDists(nlohmann::json* j)
 {
   (*j)["DISTS"] = all_dists_;
+} /* OutputDists() */
+
+void SequentialHarness::OutputRunTimes(nlohmann::json* j)
+{
+  (*j)["RUNTIMES"] = all_run_times_;
+} /* OutputDists() */
+
+void SequentialHarness::OutputObjTimes(nlohmann::json* j)
+{
+  (*j)["OBJ_RUNTIMES"] = all_obj_times_;
 } /* OutputDists() */
 
 void SequentialHarness::OutputPoints(nlohmann::json* j)

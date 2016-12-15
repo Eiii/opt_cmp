@@ -22,10 +22,14 @@ class SOOHarness : public Harness
   protected:
     void SingleRun(int run_seed, int max_samples);
     void OutputRegrets(nlohmann::json* j) const;
+    void OutputTimes(nlohmann::json* j) const;
+    void OutputObjTimes(nlohmann::json* j) const;
     void OutputPoints(nlohmann::json* j) const;
     std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);
 
   protected:
     std::vector<std::vector<double>> all_regrets_;
+    std::vector<std::vector<double>> all_times_;
+    std::vector<std::vector<double>> all_obj_times_;
     std::vector<std::vector<std::vector<std::vector<double>>>> all_points_;
 };

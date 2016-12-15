@@ -22,7 +22,11 @@ void add_node_points(const std::vector<cpplogo::Node>& nodes,
 * SOOHarness Class
 *********************************************************************/
 SOOHarness::SOOHarness(const Function& fn, int seed, std::string name) :
-    Harness(name, fn, seed), all_regrets_()
+    Harness(name, fn, seed),
+    all_regrets_(),
+    all_times_(),
+    all_obj_times_(),
+    all_points_()
 {
 } /* SOOHarness() */
 
@@ -38,6 +42,8 @@ void SOOHarness::Evaluate(int max_samples, int iterations)
 void SOOHarness::OutputData(nlohmann::json* j)
 {
   OutputRegrets(j);
+  OutputTimes(j);
+  OutputObjTimes(j);
   OutputPoints(j);
 } /* OutputData() */
 
@@ -67,7 +73,11 @@ int SOOHarness::GetNumSamples(const cpplogo::RandomSOO* soo) const
 
 void SOOHarness::SingleRun(int run_seed, int max_samples)
 {
+  timer_.Reset();
+  objective_timer.Reset();
   vector<std::tuple<int, double>> run_regrets;
+  vector<std::tuple<int, double>> run_times;
+  vector<std::tuple<int, double>> run_obj_times;
   vector<vector<vector<double>>> run_points;
 
   auto soo = CreateOptimizer(run_seed, max_samples);
@@ -78,18 +88,22 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   run_regrets.push_back(std::make_pair(samples, regret));
   add_node_points(soo->step_observed_nodes(), &run_points);
 
-  timer_.Start();
   while (!soo->IsFinished()) {
+    timer_.Start();
     soo->Step();
+    timer_.Stop();
     int samples = GetNumSamples(soo.get());
     double regret = Regret(*soo);
     run_regrets.push_back(std::make_pair(samples, regret));
+    run_times.push_back(std::make_pair(samples, timer_.ElapsedTime()));
+    run_obj_times.push_back(std::make_pair(samples, objective_timer.ElapsedTime()));
     add_node_points(soo->step_observed_nodes(), &run_points);
   }
-  timer_.Stop();
 
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(DenseValues(run_regrets, max_samples));
+  all_times_.push_back(DenseValues(run_times, max_samples));
+  all_obj_times_.push_back(DenseValues(run_obj_times, max_samples));
   all_points_.push_back(run_points);
 }
 
@@ -102,6 +116,16 @@ double SOOHarness::Regret(const cpplogo::RandomSOO& soo) const
 void SOOHarness::OutputRegrets(nlohmann::json* j) const
 {
   (*j)["REGRETS"] = all_regrets_;
+} /* OutputRegrets() */
+
+void SOOHarness::OutputTimes(nlohmann::json* j) const
+{
+  (*j)["RUNTIMES"] = all_times_;
+} /* OutputRegrets() */
+
+void SOOHarness::OutputObjTimes(nlohmann::json* j) const
+{
+  (*j)["OBJ_RUNTIMES"] = all_obj_times_;
 } /* OutputRegrets() */
 
 void SOOHarness::OutputPoints(nlohmann::json* j) const

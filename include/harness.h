@@ -6,6 +6,8 @@
 
 #include <fstream>
 
+extern CPUTimer objective_timer;
+
 class Harness
 {
   public:
