@@ -38,11 +38,12 @@ std::vector<const Function*> all_functions = {
 };
 
 std::vector<const Function*> all_timer_functions;
+std::vector<const Function*> timer_functions;
 
 std::vector<const Function*> functions = { 
   &f_rosenbrock_2,
-  &f_hartman_3,
   /*
+  &f_hartman_3,
   &f_shekel_7, 
   &f_rosenbrock_10
   */
@@ -50,12 +51,12 @@ std::vector<const Function*> functions = {
 
 void comp() 
 {
-  for (const auto& fn : all_timer_functions) {
+  for (const auto& fn : timer_functions) {
     std::cout << fn->name << std::endl;
-    SOOHarness soo(*fn, MAIN_SEED);
-    soo.Evaluate(100, 100);
+    BaMSOOHarness soo(*fn, MAIN_SEED);
+    soo.Evaluate(200, 1);
 
-    std::string out_filename = fn->name + "_soo.out";
+    std::string out_filename = fn->name + "_bamsoo.out";
     std::ofstream output;
     nlohmann::json json;
     output.open(out_filename);
@@ -72,6 +73,11 @@ void generate_timer_functions()
     new_fn->fn = add_timer(fn->fn);
     all_timer_functions.push_back(new_fn);
   }
+  for (const auto& fn : functions) {
+    Function* new_fn = new Function(*fn);
+    new_fn->fn = add_timer(fn->fn);
+    timer_functions.push_back(new_fn);
+  }
 }
 
 using ArgDeque = std::deque<const char*>;
@@ -80,7 +86,7 @@ const Function* get_function(ArgDeque* args)
 {
   const char* fn_name = args->front();
   args->pop_front();
-  for (const Function* fn : all_functions) {
+  for (const Function* fn : all_timer_functions) {
     if (fn->name == fn_name) return fn;
   }
   //Throw?

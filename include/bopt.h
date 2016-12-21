@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-#include "bayesopt.hpp"
+#include "bayesopt/bayesopt.hpp"
 
 class BOModel : public bayesopt::ContinuousModel
 {

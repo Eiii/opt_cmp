@@ -2,6 +2,8 @@
 #include "common.h"
 
 #include <iostream>
+#include <chrono>
+#include <ctime>
 
 SequentialHarness::SequentialHarness(std::string name, const Function& fn, 
                                      int seed, int init_samples) :
@@ -18,13 +20,14 @@ void SequentialHarness::Evaluate(int max_samples, int iterations)
 {
   Harness::Evaluate(max_samples, iterations);
   for (int i = 0; i < iterations; i++) {
+    auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+    std::cout << std::put_time(std::localtime(&now), "%F %T") << " - ";
     try {
       RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
       SingleRun(rand_seed(), max_samples);
-      if ((i+1) % 5 == 0) {
-        std::cout << "Finished iteration " << (i+1) << std::endl;
-        std::cout.flush();
-      }
+
+      std::cout << "Finished iteration " << (i+1) << std::endl;
+      std::cout.flush();
     } catch (const std::exception& e) {
       std::cout << "EXCEPTION @ " << i << ": " << e.what() << std::endl;
     }

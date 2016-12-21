@@ -8,7 +8,6 @@ Harness::Harness(std::string name, const Function& fn, int seed) :
 void Harness::Evaluate(int max_samples, int iterations)
 {
   (void)max_samples; (void)iterations;
-  timer_.Reset();
 } /* Evaluate() */
 
 void Harness::OutputResult(nlohmann::json* j)

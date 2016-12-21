@@ -45,6 +45,6 @@ void CPUTimer::Reset()
 
 double CPUTimer::ElapsedTime() const
 {
-  assert(has_started);
+  assert(has_started && !is_running);
   return total_time;
 } /* ElapsedTime() */

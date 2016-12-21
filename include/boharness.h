@@ -1,7 +1,7 @@
 #pragma once
 
 #include "sequentialharness.h"
-#include "bayesopt.hpp"
+#include "bayesopt/bayesopt.hpp"
 #include "bopt.h"
 #include <tuple>
 

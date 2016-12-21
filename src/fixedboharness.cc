@@ -3,6 +3,7 @@
 #include "common.h"
 
 using std::get;
+using bayesopt::vecOfvec;
 
 FixedBOHarness::FixedBOHarness(const Function& fn, int seed, FixedBOParams params) :
   BOHarness(fn, seed, std::tuple_cat(params, std::make_tuple(3)), "FixedBO1")

@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <fstream>
-#include "bayesopt.hpp"
+#include "bayesopt/bayesopt.hpp"
 
 std::vector<double> vectord_to_vector(vectord v);
 vectord vector_to_vectord(std::vector<double> v);
