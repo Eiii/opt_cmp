@@ -22,6 +22,10 @@ class SequentialHarness : public Harness
     void OutputRunTimes(nlohmann::json* json);
     void OutputObjTimes(nlohmann::json* json);
     void OutputPoints(nlohmann::json* j);
+    virtual void ResetTimers();
+    virtual void InitRunLists();
+    virtual void UpdateRunLists(const vectord& last, const vectord& best_current);
+    virtual void CommitRunLists();
 
   protected:
     virtual void InitEvaluation(int run_seed, int max_samples) = 0;
@@ -36,4 +40,11 @@ class SequentialHarness : public Harness
     std::vector<std::vector<double>> all_run_times_;
     std::vector<std::vector<double>> all_obj_times_;
     std::vector<std::vector<std::vector<double>>> all_points_;
+
+    //Run-specific variables
+    std::vector<double> run_regrets_;
+    std::vector<double> run_simple_regrets_;
+    std::vector<double> run_times_;
+    std::vector<double> run_obj_times_;
+    std::vector<vectord> run_points_;
 };

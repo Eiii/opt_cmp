@@ -20,9 +20,16 @@ class BOHarness : public SequentialHarness
     void InitEvaluation(int run_seed, int max_samples) override;
     vectord SingleStep() override;
     vectord BestCurrent() override;
+    void ResetTimers() override;
+    void InitRunLists() override;
+    void UpdateRunLists(const vectord& last, const vectord& best_current) override;
+    void CommitRunLists() override;
 
   protected:
+    void OutputData(nlohmann::json* json) override;
     void OutputHeader(nlohmann::json* j) override;
+    void OutputModelTime(nlohmann::json* j);
+    void OutputCritTime(nlohmann::json* j);
     bopt_params CreateParameters(int seed, int iterations);
 
   protected:
@@ -31,4 +38,10 @@ class BOHarness : public SequentialHarness
     const std::string surrogate_; 
     const int it_relearn_;
     std::unique_ptr<BOModel> current_model_;
+    std::vector<std::vector<double>> all_model_times_;
+    std::vector<std::vector<double>> all_crit_times_;
+
+    //Run-specific variables
+    std::vector<double> run_model_times_;
+    std::vector<double> run_crit_times_;
 };

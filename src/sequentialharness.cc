@@ -36,57 +36,21 @@ void SequentialHarness::Evaluate(int max_samples, int iterations)
 
 void SequentialHarness::SingleRun(int run_seed, int max_samples)
 {
-  timer_.Reset();
-  objective_timer.Reset();
-  std::vector<double> run_regrets;
-  std::vector<double> run_simple_regrets;
-  std::vector<double> run_times;
-  std::vector<double> obj_run_times;
-  std::vector<vectord> run_points;
-
+  ResetTimers();
   InitEvaluation(run_seed, max_samples);
-
-  //No regret associated with the initial samples-- just put in NaN
-  for (int i = 0; i < init_samples_-1; i++) {
-    run_regrets.push_back(std::numeric_limits<double>::quiet_NaN());
-    run_simple_regrets.push_back(std::numeric_limits<double>::quiet_NaN());
-  }
-
-  //Record the 'initial' regret before the optimization starts.
-  if (init_samples_ > 0) {
-    auto regret = Regret(BestCurrent());
-    run_regrets.push_back(regret);
-  }
+  InitRunLists();
 
   for (int i = init_samples_; i < max_samples; i++) {
     timer_.Start();
-    auto last = SingleStep();
+    const auto last = SingleStep();
     timer_.Stop();
-    run_points.push_back(last);
-    run_times.push_back(timer_.ElapsedTime());
-    obj_run_times.push_back(objective_timer.ElapsedTime());
-    auto result = BestCurrent();
+    const auto best_current = BestCurrent();
 
-    // Calculate normal regret
-    auto regret = Regret(result);
-    run_regrets.push_back(regret);
-
-    // Calculate simple regret-- only based on best past observation
-    double best_simple = std::numeric_limits<double>::infinity();
-    for (const auto& pt : run_points) {
-      double regret = Regret(pt);
-      best_simple = std::min(best_simple, regret);
-    }
-    run_simple_regrets.push_back(best_simple);
+    UpdateRunLists(last, best_current);
   }
 
   //Put this run's regrets into the list of all regrets
-  all_regrets_.push_back(run_regrets);
-  all_simple_regrets_.push_back(run_simple_regrets);
-  all_dists_.push_back(CalcDist(run_points));
-  all_run_times_.push_back(run_times);
-  all_obj_times_.push_back(obj_run_times);
-  all_points_.push_back(vectord_to_vector(run_points));
+  CommitRunLists();
 }
 
 double SequentialHarness::Regret(const vectord& point)
@@ -129,6 +93,63 @@ void SequentialHarness::OutputPoints(nlohmann::json* j)
 {
   (*j)["POINTS"] = all_points_;
 } /* OutputPoints() */
+
+void SequentialHarness::ResetTimers()
+{
+  timer_.Reset();
+  objective_timer.Reset();
+} /* ResetTimers() */
+
+void SequentialHarness::InitRunLists()
+{
+  run_regrets_.clear();
+  run_simple_regrets_.clear();
+  run_times_.clear();
+  run_obj_times_.clear();
+  run_points_.clear();
+
+  //No regret associated with the initial samples-- just put in NaN
+  for (int i = 0; i < init_samples_-1; i++) {
+    run_regrets_.push_back(std::numeric_limits<double>::quiet_NaN());
+    run_simple_regrets_.push_back(std::numeric_limits<double>::quiet_NaN());
+  }
+
+  //Record the 'initial' regret before the optimization starts.
+  if (init_samples_ > 0) {
+    auto regret = Regret(BestCurrent());
+    run_regrets_.push_back(regret);
+  }
+
+} /* InitRunLists() */
+
+void SequentialHarness::UpdateRunLists(const vectord& last, const vectord& best_current)
+{
+  // Calculate normal regret
+  const auto regret = Regret(best_current);
+  run_regrets_.push_back(regret);
+
+  // Calculate simple regret-- only based on best past observation
+  double best_simple = std::numeric_limits<double>::infinity();
+  for (const auto& pt : run_points_) {
+    double r = Regret(pt);
+    best_simple = std::min(best_simple, r);
+  }
+  run_simple_regrets_.push_back(best_simple);
+
+  run_times_.push_back(timer_.ElapsedTime());
+  run_obj_times_.push_back(objective_timer.ElapsedTime());
+  run_points_.push_back(last);
+} /* UpdateRunLists() */
+
+void SequentialHarness::CommitRunLists()
+{
+  all_regrets_.push_back(run_regrets_);
+  all_simple_regrets_.push_back(run_simple_regrets_);
+  all_dists_.push_back(CalcDist(run_points_));
+  all_run_times_.push_back(run_times_);
+  all_obj_times_.push_back(run_obj_times_);
+  all_points_.push_back(vectord_to_vector(run_points_));
+} /* CommitRunLists() */
 
 //Helper functions for CalcDist
 namespace {

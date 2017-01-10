@@ -1,7 +1,11 @@
 #include "boharness.h"
 #include "common.h"
+#include "boharness_timers.h"
 
 using std::get;
+
+CPUTimer model_timer;
+CPUTimer crit_timer;
 
 BOHarness::BOHarness(const Function& fn, int seed, BOParams params, std::string name) :
     SequentialHarness(name, fn, seed, get<4>(params)), 
@@ -9,7 +13,9 @@ BOHarness::BOHarness(const Function& fn, int seed, BOParams params, std::string 
     kernel_(get<1>(params)),
     surrogate_(get<2>(params)),
     it_relearn_(get<3>(params)),
-    current_model_(nullptr)
+    current_model_(nullptr),
+    all_model_times_(),
+    all_crit_times_()
 {
 } /* BOHarness() */
 
@@ -32,6 +38,41 @@ vectord BOHarness::BestCurrent()
   return current_model_->getFinalResult();
 } /* BestCurrent() */
 
+void BOHarness::ResetTimers()
+{
+  SequentialHarness::ResetTimers();
+  model_timer.Reset();
+  crit_timer.Reset();
+} /* ResetTimers() */
+
+void BOHarness::InitRunLists()
+{
+  SequentialHarness::InitRunLists();
+  run_model_times_.clear();
+  run_crit_times_.clear();
+} /* InitRunLists() */
+
+void BOHarness::UpdateRunLists(const vectord& last, const vectord& best_current)
+{
+  SequentialHarness::UpdateRunLists(last, best_current);
+  run_model_times_.push_back(model_timer.ElapsedTime());
+  run_crit_times_.push_back(crit_timer.ElapsedTime());
+} /* UpdateRunLists() */
+
+void BOHarness::CommitRunLists()
+{
+  SequentialHarness::CommitRunLists();
+  all_model_times_.push_back(run_model_times_);
+  all_crit_times_.push_back(run_crit_times_);
+} /* CommitRunLists() */
+
+void BOHarness::OutputData(nlohmann::json* json)
+{
+  SequentialHarness::OutputData(json);
+  OutputModelTime(json);
+  OutputCritTime(json);
+} /* OutputData() */
+
 void BOHarness::OutputHeader(nlohmann::json* j)
 {
   (*j)["FN_NAME"] = fn_.name;
@@ -49,6 +90,16 @@ void BOHarness::OutputHeader(nlohmann::json* j)
   ss << "init_samples:" << init_samples_ << ",";
   (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
+
+void BOHarness::OutputModelTime(nlohmann::json* j)
+{
+  (*j)["MODEL_TIMES"] = all_model_times_;
+} /* OutputModelTime() */
+
+void BOHarness::OutputCritTime(nlohmann::json* j)
+{
+  (*j)["CRIT_TIMES"] = all_crit_times_;
+} /* OutputCritTime() */
 
 bopt_params BOHarness::CreateParameters(int seed, int iterations)
 {
