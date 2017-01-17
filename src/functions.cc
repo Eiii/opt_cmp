@@ -136,6 +136,39 @@ Function f_rosenbrock_2 = {
   .max_loc = {0.4,0.4}
 };
 
+Function f_rosenbrock_4 = {
+  .name = "rosenbrock_4",
+  .dim = 4,
+  .fn = [](const vectord& i) {
+    assert(i.size() == 4);
+    return rosenbrock(i);
+  },
+  .fn_max = 0.0,
+  .max_loc = {0.4,0.4,0.4,0.4}
+};
+
+Function f_rosenbrock_6 = {
+  .name = "rosenbrock_6",
+  .dim = 6,
+  .fn = [](const vectord& i) {
+    assert(i.size() == 6);
+    return rosenbrock(i);
+  },
+  .fn_max = 0.0,
+  .max_loc = {0.4,0.4,0.4,0.4,0.4,0.4}
+};
+
+Function f_rosenbrock_8 = {
+  .name = "rosenbrock_8",
+  .dim = 8,
+  .fn = [](const vectord& i) {
+    assert(i.size() == 8);
+    return rosenbrock(i);
+  },
+  .fn_max = 0.0,
+  .max_loc = {0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4}
+};
+
 Function f_rosenbrock_10 = {
   .name = "rosenbrock_10",
   .dim = 10,

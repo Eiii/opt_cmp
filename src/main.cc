@@ -13,7 +13,6 @@
 #include "sooharness.h"
 #include "logoharness.h"
 #include "bamsooharness.h"
-#include "initbamsooharness.h"
 #include "randomharness.h"
 #include "bamlogoharness.h"
 
@@ -29,6 +28,9 @@ std::vector<const Function*> all_functions = {
   &f_peaks,
   &f_branin,
   &f_rosenbrock_2,
+  &f_rosenbrock_4,
+  &f_rosenbrock_6,
+  &f_rosenbrock_8,
   &f_hartman_3,
   &f_shekel_5, 
   &f_shekel_7, 
@@ -197,22 +199,6 @@ HarnessPtr create_bamsoo(int seed, const Function& fn, ArgDeque* args)
   return bamsoo;
 }
 
-HarnessPtr create_init_bamsoo(int seed, const Function& fn, ArgDeque* args) 
-{
-  if (args->size() != 1) {
-    throw std::invalid_argument("Bad number of algorithm arguments.");
-  }
-
-  //Initial Samples
-  int init_samples = std::stoi(args->front());
-  args->pop_front();
-
-  std::cout << "INITBAMSOO" << std::endl;
-  std::unique_ptr<Harness> bamsoo;
-  bamsoo.reset(new InitBaMSOOHarness(fn, seed, init_samples));
-  return bamsoo;
-}
-
 HarnessPtr create_bamlogo(int seed, const Function& fn, ArgDeque* args) 
 {
   if (args->size() != 0) {
@@ -253,8 +239,6 @@ HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args)
     return create_logo(seed, fn, args);
   } else if (alg_name == "BAMSOO") {
     return create_bamsoo(seed, fn, args);
-  } else if (alg_name == "INITBAMSOO") {
-    return create_init_bamsoo(seed, fn, args);
   } else if (alg_name == "BAMLOGO") {
     return create_bamlogo(seed, fn, args);
   } else {

@@ -32,6 +32,9 @@ extern Function f_branin;
 * rosenbrock
 ***********************************************************/
 extern Function f_rosenbrock_2;
+extern Function f_rosenbrock_4;
+extern Function f_rosenbrock_6;
+extern Function f_rosenbrock_8;
 extern Function f_rosenbrock_10;
 
 /***********************************************************
