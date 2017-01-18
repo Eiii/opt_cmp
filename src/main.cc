@@ -36,7 +36,19 @@ std::vector<const Function*> all_functions = {
   &f_shekel_7, 
   &f_shekel_10,
   &f_hartman_6,
-  &f_rosenbrock_10
+  &f_rosenbrock_10,
+  &f_rastrigin_2,
+  &f_rastrigin_4,
+  &f_rastrigin_6,
+  &f_rastrigin_10,
+  &f_schwefel_2,
+  &f_schwefel_4,
+  &f_schwefel_6,
+  &f_schwefel_10,
+  &f_ackley_2,
+  &f_ackley_4,
+  &f_ackley_6,
+  &f_ackley_10,
 };
 
 std::vector<const Function*> all_timer_functions;
@@ -284,7 +296,12 @@ int main(int argc, const char* argv[])
 {
   generate_timer_functions();
   if (argc == 1) {
-    comp();
+    for (const auto& fn : all_functions) {
+      const vectord& loc = set_vector(fn->max_loc);
+      double val = fn->fn(loc);
+      std::cout << fn->name << "\t";
+      std::cout << loc << " : " << val << " / " << fn->fn_max << std::endl;
+    }
   } else {
     std::string out_filename;
     HarnessPtr harness;

@@ -49,3 +49,27 @@ extern Function f_hartman_6;
 extern Function f_shekel_5;
 extern Function f_shekel_7;
 extern Function f_shekel_10;
+
+/***********************************************************
+* rastrigin
+***********************************************************/
+extern Function f_rastrigin_2;
+extern Function f_rastrigin_4;
+extern Function f_rastrigin_6;
+extern Function f_rastrigin_10;
+
+/***********************************************************
+* schwefel
+***********************************************************/
+extern Function f_schwefel_2;
+extern Function f_schwefel_4;
+extern Function f_schwefel_6;
+extern Function f_schwefel_10;
+
+/***********************************************************
+* ackley
+***********************************************************/
+extern Function f_ackley_2;
+extern Function f_ackley_4;
+extern Function f_ackley_6;
+extern Function f_ackley_10;
