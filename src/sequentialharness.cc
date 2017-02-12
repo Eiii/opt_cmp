@@ -20,15 +20,17 @@ void SequentialHarness::Evaluate(int max_samples, int iterations)
 {
   Harness::Evaluate(max_samples, iterations);
   for (int i = 0; i < iterations; i++) {
-    auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    std::cout << std::put_time(std::localtime(&now), "%F %T") << " - ";
     try {
       RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
       SingleRun(rand_seed(), max_samples);
 
+      auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+      std::cout << std::put_time(std::localtime(&now), "%F %T") << " - ";
       std::cout << "Finished iteration " << (i+1) << std::endl;
       std::cout.flush();
     } catch (const std::exception& e) {
+      auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+      std::cout << std::put_time(std::localtime(&now), "%F %T") << " - ";
       std::cout << "EXCEPTION @ " << i << ": " << e.what() << std::endl;
     }
   }

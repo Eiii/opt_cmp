@@ -306,14 +306,18 @@ int main(int argc, const char* argv[])
     std::string out_filename;
     HarnessPtr harness;
     int samples, num_it;
-    std::tie(out_filename, harness, samples, num_it) = parse_args(argc-1, argv+1);
-    harness->Evaluate(samples, num_it); 
+    try {
+      std::tie(out_filename, harness, samples, num_it) = parse_args(argc-1, argv+1);
+      harness->Evaluate(samples, num_it); 
 
-    std::ofstream output;
-    nlohmann::json json;
-    output.open(out_filename);
-    harness->OutputResult(&json);
-    output << json;
-    output.close();
+      std::ofstream output;
+      nlohmann::json json;
+      output.open(out_filename);
+      harness->OutputResult(&json);
+      output << std::setw(2) << json;
+      output.close();
+    } catch (const std::exception& e) {
+      std::cout << "ERROR: " << e.what() << std::endl;
+    }
   }
 }
