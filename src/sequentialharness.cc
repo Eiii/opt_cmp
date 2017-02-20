@@ -10,7 +10,6 @@ SequentialHarness::SequentialHarness(std::string name, const Function& fn,
     Harness(name, fn, seed), 
     init_samples_(init_samples),
     all_regrets_(), 
-    all_dists_(),
     all_run_times_(),
     all_points_()
 {
@@ -64,7 +63,6 @@ double SequentialHarness::Regret(const vectord& point)
 void SequentialHarness::OutputData(nlohmann::json* j)
 {
   OutputRegrets(j);
-  OutputDists(j);
   OutputRunTimes(j);
   OutputObjTimes(j);
   OutputPoints(j);
@@ -76,20 +74,15 @@ void SequentialHarness::OutputRegrets(nlohmann::json* j)
   (*j)["SIMPLE_REGRETS"] = all_simple_regrets_;
 } /* OutputRegrets() */
 
-void SequentialHarness::OutputDists(nlohmann::json* j)
-{
-  (*j)["DISTS"] = all_dists_;
-} /* OutputDists() */
-
 void SequentialHarness::OutputRunTimes(nlohmann::json* j)
 {
   (*j)["RUNTIMES"] = all_run_times_;
-} /* OutputDists() */
+} /* OutputRunTimes() */
 
 void SequentialHarness::OutputObjTimes(nlohmann::json* j)
 {
   (*j)["OBJ_RUNTIMES"] = all_obj_times_;
-} /* OutputDists() */
+} /* OutputObjTimes() */
 
 void SequentialHarness::OutputPoints(nlohmann::json* j)
 {
@@ -132,10 +125,8 @@ void SequentialHarness::UpdateRunLists(const vectord& last, const vectord& best_
 
   // Calculate simple regret-- only based on best past observation
   double best_simple = std::numeric_limits<double>::infinity();
-  for (const auto& pt : run_points_) {
-    double r = Regret(pt);
-    best_simple = std::min(best_simple, r);
-  }
+  if (!run_simple_regrets_.empty()) best_simple = run_simple_regrets_.back();
+  best_simple = std::min(best_simple, Regret(last));
   run_simple_regrets_.push_back(best_simple);
 
   run_times_.push_back(timer_.ElapsedTime());
@@ -147,68 +138,7 @@ void SequentialHarness::CommitRunLists()
 {
   all_regrets_.push_back(run_regrets_);
   all_simple_regrets_.push_back(run_simple_regrets_);
-  all_dists_.push_back(CalcDist(run_points_));
   all_run_times_.push_back(run_times_);
   all_obj_times_.push_back(run_obj_times_);
   all_points_.push_back(vectord_to_vector(run_points_));
 } /* CommitRunLists() */
-
-//Helper functions for CalcDist
-namespace {
-double sqr_distance(const vectord& a, const vectord& b) 
-{
-  assert(a.size() == b.size());
-  double total = 0.0;
-  for (size_t i = 0; i < a.size(); i++) {
-    double diff = a(i)-b(i);
-    total += diff*diff;
-  }
-  return total;
-}
-
-double distance(const vectord& a, const vectord& b) 
-{
-  return sqrt(sqr_distance(a, b));
-}
-
-using vec_it = std::vector<vectord>::const_iterator;
-vectord closest_point(vec_it begin, vec_it end)
-{
-  assert(begin != end);
-  vectord closest_point;
-  double closest_sqr = std::numeric_limits<double>::infinity();
-  for (auto it = begin; it != end; ++it) {
-    double sdist = sqr_distance(*end, *it);
-    if (sdist < closest_sqr) {
-      closest_point = *it;
-      closest_sqr = sdist;
-    }
-  }
-  return closest_point;
-}
-
-double closest_point_dist(vec_it begin, vec_it end)
-{
-  if (begin == end) return std::numeric_limits<double>::quiet_NaN();
-  vectord point = closest_point(begin, end);
-  return distance(point, *end);
-}
-
-}
-
-std::vector<double> SequentialHarness::CalcDist(const std::vector<vectord>& points)
-{
-  std::vector<double> dists;
-
-  //No distance associated with the initial samples-- just put in NaN
-  for (int i = 0; i < init_samples_; i++) {
-    dists.push_back(std::numeric_limits<double>::quiet_NaN());
-  }
-
-  for (auto it = points.begin(); it != points.end(); ++it) {
-    double dist = closest_point_dist(points.begin(), it);
-    dists.push_back(dist);
-  }
-
-  return dists;
-} /* CalcDist() */

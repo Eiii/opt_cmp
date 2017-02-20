@@ -296,6 +296,7 @@ int main(int argc, const char* argv[])
 {
   generate_timer_functions();
   if (argc == 1) {
+    cpplogo::init_logging(cpplogo::trace);
     for (const auto& fn : all_functions) {
       const vectord& loc = set_vector(fn->max_loc);
       double val = fn->fn(loc);
@@ -306,6 +307,7 @@ int main(int argc, const char* argv[])
     std::string out_filename;
     HarnessPtr harness;
     int samples, num_it;
+    cpplogo::init_logging(cpplogo::output);
     try {
       std::tie(out_filename, harness, samples, num_it) = parse_args(argc-1, argv+1);
       harness->Evaluate(samples, num_it); 

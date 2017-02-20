@@ -15,10 +15,8 @@ class SequentialHarness : public Harness
   protected:
     void SingleRun(int run_seed, int iterations);
     double Regret(const vectord& point);
-    std::vector<double> CalcDist(const std::vector<vectord>& points);
     void OutputData(nlohmann::json* json) override;
     void OutputRegrets(nlohmann::json* json);
-    void OutputDists(nlohmann::json* json);
     void OutputRunTimes(nlohmann::json* json);
     void OutputObjTimes(nlohmann::json* json);
     void OutputPoints(nlohmann::json* j);
@@ -36,7 +34,6 @@ class SequentialHarness : public Harness
     const int init_samples_;
     std::vector<std::vector<double>> all_regrets_;
     std::vector<std::vector<double>> all_simple_regrets_;
-    std::vector<std::vector<double>> all_dists_;
     std::vector<std::vector<double>> all_run_times_;
     std::vector<std::vector<double>> all_obj_times_;
     std::vector<std::vector<std::vector<double>>> all_points_;
