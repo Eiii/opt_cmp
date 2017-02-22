@@ -304,7 +304,7 @@ Function f_shekel_10 = {
 double rastrigin(const vectord& input, size_t d)
 {
   assert(input.size() == d);
-  vectord in = rescale_input(input, -5.12, 5.12);
+  vectord in = rescale_input(input, -5.12, 3.5);
   double r = 10.0*d;
   for (size_t i = 0; i < d; i++) {
     r += in(i)*in(i) - 10.0*cos(2.0*M_PI*in(i));
@@ -319,7 +319,7 @@ Function f_rastrigin_2 = {
     return rastrigin(input, 2);
   },
   .fn_max = 0,
-  .max_loc = {0.5, 0.5}
+  .max_loc = {0.593967517401, 0.593967517401}
 };
 
 Function f_rastrigin_4 = {
@@ -329,7 +329,7 @@ Function f_rastrigin_4 = {
     return rastrigin(input, 4);
   },
   .fn_max = 0,
-  .max_loc = {0.5, 0.5, 0.5, 0.5}
+  .max_loc = {0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401}
 };
 
 Function f_rastrigin_6 = {
@@ -339,7 +339,7 @@ Function f_rastrigin_6 = {
     return rastrigin(input, 6);
   },
   .fn_max = 0,
-  .max_loc = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5}
+  .max_loc = {0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401}
 };
 
 Function f_rastrigin_10 = {
@@ -349,7 +349,7 @@ Function f_rastrigin_10 = {
     return rastrigin(input, 10);
   },
   .fn_max = 0,
-  .max_loc = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5}
+  .max_loc = {0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401}
 };
 
 /***********************************************************
@@ -413,7 +413,7 @@ Function f_schwefel_10 = {
 double ackley(const vectord& input, size_t d)
 {
   assert(input.size() == d);
-  vectord in = rescale_input(input, -32.768, 32.768);
+  vectord in = rescale_input(input, -22.768, 32.768);
   double a = 20.0;
   double b = 0.2;
   double c = 2.0 * M_PI;
@@ -443,7 +443,7 @@ Function f_ackley_2 = {
     return ackley(input, 2);
   },
   .fn_max = 0,
-  .max_loc = {0.5, 0.5}
+  .max_loc = {0.409968308845, 0.409968308845}
 };
 
 Function f_ackley_4 = {
@@ -453,7 +453,7 @@ Function f_ackley_4 = {
     return ackley(input, 4);
   },
   .fn_max = 0,
-  .max_loc = {0.5, 0.5, 0.5, 0.5}
+  .max_loc = {0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845}
 };
 
 Function f_ackley_6 = {
@@ -463,7 +463,7 @@ Function f_ackley_6 = {
     return ackley(input, 6);
   },
   .fn_max = 0,
-  .max_loc = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5}
+  .max_loc = {0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845}
 };
 
 Function f_ackley_10 = {
@@ -473,5 +473,5 @@ Function f_ackley_10 = {
     return ackley(input, 10);
   },
   .fn_max = 0,
-  .max_loc = {0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5}
+  .max_loc = {0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845}
 };
