@@ -298,7 +298,7 @@ int main(int argc, const char* argv[])
   if (argc == 1) {
     cpplogo::init_logging(cpplogo::output);
     int seed = 1337;
-    auto params = BOHarness::BOParams("cLCBa", "kSEARD", "sGaussianProcessML", 5, 2);
+    auto params = BOHarness::BOParams("cLCBk", "kSEARD", "sGaussianProcessML", 5, 2);
 
     Function* t_fn = new Function(f_rosenbrock_4);
     t_fn->fn = add_timer(t_fn->fn);
