@@ -296,13 +296,17 @@ int main(int argc, const char* argv[])
 {
   generate_timer_functions();
   if (argc == 1) {
-    cpplogo::init_logging(cpplogo::trace);
-    for (const auto& fn : all_functions) {
-      const vectord& loc = set_vector(fn->max_loc);
-      double val = fn->fn(loc);
-      std::cout << fn->name << "\t";
-      std::cout << loc << " : " << val << " / " << fn->fn_max << std::endl;
-    }
+    cpplogo::init_logging(cpplogo::output);
+    int seed = 1337;
+    auto params = BOHarness::BOParams("cLCBa", "kSEARD", "sGaussianProcessML", 5, 2);
+
+    Function* t_fn = new Function(f_rosenbrock_4);
+    t_fn->fn = add_timer(t_fn->fn);
+    std::unique_ptr<Harness> bo;
+    bo.reset(new BOHarness(*t_fn, seed, params));
+
+    int samples = 50; int num_it = 1;
+    bo->Evaluate(samples, num_it); 
   } else {
     std::string out_filename;
     HarnessPtr harness;
