@@ -125,7 +125,7 @@ void SequentialHarness::UpdateRunLists(const vectord& last, const vectord& best_
 
   // Calculate simple regret-- only based on best past observation
   double best_simple = std::numeric_limits<double>::infinity();
-  if (!run_simple_regrets_.empty()) best_simple = run_simple_regrets_.back();
+  if (!run_simple_regrets_.empty() && !isnan(run_simple_regrets_.back())) best_simple = run_simple_regrets_.back();
   best_simple = std::min(best_simple, Regret(last));
   run_simple_regrets_.push_back(best_simple);
 
