@@ -29,6 +29,7 @@ class SequentialHarness : public Harness
     virtual void InitEvaluation(int run_seed, int max_samples) = 0;
     virtual vectord SingleStep() = 0;
     virtual vectord BestCurrent() = 0;
+    virtual vectord BestCurrentSimple() { return BestCurrent(); }
 
   protected:
     const int init_samples_;

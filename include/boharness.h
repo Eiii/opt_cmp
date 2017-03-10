@@ -20,6 +20,7 @@ class BOHarness : public SequentialHarness
     void InitEvaluation(int run_seed, int max_samples) override;
     vectord SingleStep() override;
     vectord BestCurrent() override;
+    vectord BestCurrentSimple() override;
     void ResetTimers() override;
     void InitRunLists() override;
     void UpdateRunLists(const vectord& last, const vectord& best_current) override;

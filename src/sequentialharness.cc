@@ -113,6 +113,9 @@ void SequentialHarness::InitRunLists()
   if (init_samples_ > 0) {
     auto regret = Regret(BestCurrent());
     run_regrets_.push_back(regret);
+
+    auto simple_regret = Regret(BestCurrentSimple());
+    run_simple_regrets_.push_back(simple_regret);
   }
 
 } /* InitRunLists() */

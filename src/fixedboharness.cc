@@ -1,12 +1,11 @@
 #include "fixedboharness.h"
-#include "cpplogo/randomsoo.h"
 #include "common.h"
 
 using std::get;
 using bayesopt::vecOfvec;
 
-FixedBOHarness::FixedBOHarness(const Function& fn, int seed, FixedBOParams params) :
-  BOHarness(fn, seed, std::tuple_cat(params, std::make_tuple(3)), "FixedBO1")
+FixedBOHarness::FixedBOHarness(const Function& fn, int seed, BOParams params) :
+  BOHarness(fn, seed, params, "FixedBO1")
 {
 } /* FixedBOHarness() */
 
@@ -19,31 +18,27 @@ void FixedBOHarness::InitEvaluation(int run_seed, int max_samples)
 
   //Instead of initializing the default way, get the initial observations
   //from SOO
-  
   vecOfvec xs; std::vector<double> ys;
-  cpplogo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
-  cpplogo::RandomSOO soo(options);
 
-  //First observation
-  auto last = soo.step_observed_nodes();
-  assert(last.size() == 1);
-  {
-    const auto& node = last.front();
-    xs.push_back(node.Center());
-    ys.push_back(node.value());
+  //Add center point...
+  vectord center_point(fn_.dim);
+  for (int i = 0; i < fn_.dim; i++) {
+    center_point[i] = 0.5;
   }
+  double center_val = fn_.fn(center_point);
+  xs.push_back(center_point);
+  ys.push_back(center_val);
 
-  //Second observation
-  soo.Step();
-  last = soo.step_observed_nodes();
-  //Grabbing the first TWO nodes from the next step lets us
-  //get the first three nodes that split the space. This
-  //is a horrible hack, but it works as long as the order
-  //of the nodes in the step_observed list stays the same.
-  for (int i = 0; i < 2; i++) {
-    const auto& node = last[i];
-    xs.push_back(node.Center());
-    ys.push_back(node.value());
+  //...and the rest as random.
+  for (int i = 1 ; i < init_samples_; i++) {
+    vectord pt(fn_.dim);
+    RandomReal rand(rng_, UniformRealDist(0, 1));
+    for (size_t j = 0; j < pt.size(); j++) {
+      pt(j) = rand();
+    }
+    double val = fn_.fn(pt);
+    xs.push_back(pt);
+    ys.push_back(val);
   }
 
   //Convert to boost container, because of dumb stuff

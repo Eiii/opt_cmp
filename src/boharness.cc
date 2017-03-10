@@ -1,6 +1,7 @@
 #include "boharness.h"
 #include "common.h"
 #include "boharness_timers.h"
+#include "dataset.hpp"
 
 using std::get;
 
@@ -37,6 +38,23 @@ vectord BOHarness::BestCurrent()
 {
   return current_model_->getFinalResult();
 } /* BestCurrent() */
+
+vectord BOHarness::BestCurrentSimple()
+{
+  auto dataset = current_model_->getData();
+  size_t count = dataset->getNSamples();
+  double best = std::numeric_limits<double>::infinity();
+  int best_idx = -1;
+  for (size_t i = 0; i < count; i++) {
+    double y = dataset->getSampleY(i);
+    if (y < best) {
+      best = y;
+      best_idx = i;
+    }
+  }
+  assert(best_idx != -1);
+  return dataset->getSampleX(best_idx);
+} /* BestCurrentSimple() */
 
 void BOHarness::ResetTimers()
 {

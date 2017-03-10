@@ -170,7 +170,7 @@ HarnessPtr create_fixed_bo(int seed, const Function& fn,
   args->pop_front();
 
   //Parameters
-  auto params = FixedBOHarness::FixedBOParams(crit, kernel, surr, relearn);
+  auto params = FixedBOHarness::BOParams(crit, kernel, surr, relearn, 2);
 
   std::cout << "FIXEDBO" << std::endl;
   std::unique_ptr<Harness> bo;
@@ -298,12 +298,12 @@ int main(int argc, const char* argv[])
   if (argc == 1) {
     cpplogo::init_logging(cpplogo::output);
     int seed = 1337;
-    auto params = BOHarness::BOParams("cLCBk", "kSEARD", "sGaussianProcessML", 5, 2);
+    auto params = FixedBOHarness::BOParams("cLCBk", "kSEARD", "sGaussianProcessML", 5, 2);
 
     Function* t_fn = new Function(f_rosenbrock_4);
     t_fn->fn = add_timer(t_fn->fn);
     std::unique_ptr<Harness> bo;
-    bo.reset(new BOHarness(*t_fn, seed, params));
+    bo.reset(new FixedBOHarness(*t_fn, seed, params));
 
     int samples = 50; int num_it = 1;
     bo->Evaluate(samples, num_it); 
