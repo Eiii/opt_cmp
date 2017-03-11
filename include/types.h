@@ -33,4 +33,6 @@ struct Function {
   ObjectiveFn fn;
   double fn_max;
   std::vector<double> max_loc;
+  std::vector<double> min_edge;
+  std::vector<double> max_edge;
 };

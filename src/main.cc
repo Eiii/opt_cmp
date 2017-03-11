@@ -169,8 +169,12 @@ HarnessPtr create_fixed_bo(int seed, const Function& fn,
   int relearn = std::stoi(args->front());
   args->pop_front();
 
+  //Initial samples
+  int init = std::stoi(args->front());
+  args->pop_front();
+
   //Parameters
-  auto params = FixedBOHarness::BOParams(crit, kernel, surr, relearn, 2);
+  auto params = FixedBOHarness::BOParams(crit, kernel, surr, relearn, init);
 
   std::cout << "FIXEDBO" << std::endl;
   std::unique_ptr<Harness> bo;
