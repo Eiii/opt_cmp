@@ -149,7 +149,7 @@ HarnessPtr create_bo(int seed, const Function& fn,
 HarnessPtr create_fixed_bo(int seed, const Function& fn, 
                                    ArgDeque* args) 
 {
-  if (args->size() < 4) {
+  if (args->size() < 6) {
     throw std::invalid_argument("Bad number of algorithm arguments.");
   }
 
@@ -173,12 +173,16 @@ HarnessPtr create_fixed_bo(int seed, const Function& fn,
   int init = std::stoi(args->front());
   args->pop_front();
 
+  //Initial samples
+  bool center = (std::stoi(args->front()) != 0);
+  args->pop_front();
+
   //Parameters
   auto params = FixedBOHarness::BOParams(crit, kernel, surr, relearn, init);
 
   std::cout << "FIXEDBO" << std::endl;
   std::unique_ptr<Harness> bo;
-  bo.reset(new FixedBOHarness(fn, seed, params));
+  bo.reset(new FixedBOHarness(fn, seed, params, center));
   return bo;
 }
 
@@ -307,7 +311,7 @@ int main(int argc, const char* argv[])
     Function* t_fn = new Function(f_rosenbrock_4);
     t_fn->fn = add_timer(t_fn->fn);
     std::unique_ptr<Harness> bo;
-    bo.reset(new FixedBOHarness(*t_fn, seed, params));
+    bo.reset(new FixedBOHarness(*t_fn, seed, params, true));
 
     int samples = 50; int num_it = 1;
     bo->Evaluate(samples, num_it); 
