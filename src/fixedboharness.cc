@@ -13,7 +13,6 @@ void FixedBOHarness::InitEvaluation(int run_seed, int max_samples)
 {
   //Same as BOHarness...
   bopt_params params = CreateParameters(run_seed, max_samples);
-  BOModel model(params, fn_); 
   current_model_.reset(new BOModel(params, fn_));
 
   //Instead of initializing the default way, get the initial observations
