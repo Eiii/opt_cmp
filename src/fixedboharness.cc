@@ -38,7 +38,7 @@ void FixedBOHarness::InitEvaluation(int run_seed, int max_samples)
     for (size_t j = 0; j < pt.size(); j++) {
       pt(j) = rand();
     }
-    double val = fn_.fn(pt);
+    double val = -fn_.fn(pt);
     xs.push_back(pt);
     ys.push_back(val);
   }
