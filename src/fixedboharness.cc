@@ -26,7 +26,7 @@ void FixedBOHarness::InitEvaluation(int run_seed, int max_samples)
     for (int i = 0; i < fn_.dim; i++) {
       center_point[i] = 0.5;
     }
-    double center_val = fn_.fn(center_point);
+    double center_val = -fn_.fn(center_point);
     xs.push_back(center_point);
     ys.push_back(center_val);
   }
