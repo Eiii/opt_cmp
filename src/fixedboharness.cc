@@ -14,7 +14,7 @@ void FixedBOHarness::InitEvaluation(int run_seed, int max_samples)
 {
   //Same as BOHarness...
   bopt_params params = CreateParameters(run_seed, max_samples);
-  current_model_.reset(new BOModel(params, fn_));
+  current_model_.reset(new BOModel(params, fn_, objective_));
 
   //Instead of initializing the default way, get the initial observations
   //from SOO
@@ -26,7 +26,7 @@ void FixedBOHarness::InitEvaluation(int run_seed, int max_samples)
     for (int i = 0; i < fn_.dim; i++) {
       center_point[i] = 0.5;
     }
-    double center_val = -fn_.fn(center_point);
+    double center_val = -objective_(center_point);
     xs.push_back(center_point);
     ys.push_back(center_val);
   }
@@ -38,7 +38,7 @@ void FixedBOHarness::InitEvaluation(int run_seed, int max_samples)
     for (size_t j = 0; j < pt.size(); j++) {
       pt(j) = rand();
     }
-    double val = -fn_.fn(pt);
+    double val = -objective_(pt);
     xs.push_back(pt);
     ys.push_back(val);
   }

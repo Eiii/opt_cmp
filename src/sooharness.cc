@@ -77,7 +77,7 @@ void SOOHarness::OutputHeader(nlohmann::json* j)
 
 std::unique_ptr<cpplogo::RandomSOO> SOOHarness::CreateOptimizer(int run_seed, int max_samples) const
 {
-  cpplogo::RandomSOO::Options options(fn_.fn, fn_.dim, max_samples, 3, run_seed);
+  cpplogo::RandomSOO::Options options(objective_, fn_.dim, max_samples, 3, run_seed);
   return std::unique_ptr<cpplogo::RandomSOO>(new cpplogo::RandomSOO(options));
 } /* CreateOptimizer() */
 

@@ -26,13 +26,3 @@ using RandomInt = boost::variate_generator<RandomEngine&, UniformIntDist>;
 using RandomReal = boost::variate_generator<RandomEngine&, UniformRealDist>;
 using NormalReal = boost::variate_generator<RandomEngine&, NormalDist>;
 using ObjectiveFn = std::function<double(const vectord&)>;
-
-struct Function {
-  std::string name;
-  int dim;
-  ObjectiveFn fn;
-  double fn_max;
-  std::vector<double> max_loc;
-  std::vector<double> min_edge;
-  std::vector<double> max_edge;
-};

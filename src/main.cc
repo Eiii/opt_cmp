@@ -84,12 +84,12 @@ void generate_timer_functions()
 {
   for (const auto& fn : all_functions) {
     Function* new_fn = new Function(*fn);
-    new_fn->fn = add_timer(fn->fn);
+    new_fn->raw_fn = add_timer(fn->raw_fn);
     all_timer_functions.push_back(new_fn);
   }
   for (const auto& fn : functions) {
     Function* new_fn = new Function(*fn);
-    new_fn->fn = add_timer(fn->fn);
+    new_fn->raw_fn = add_timer(fn->raw_fn);
     timer_functions.push_back(new_fn);
   }
 }
@@ -305,9 +305,11 @@ void test_fns()
   cpplogo::init_logging(cpplogo::trace);
   for (const auto& fn : all_functions) {
     const vectord& loc = set_vector(fn->max_loc);
-    double val = fn->fn(loc);
+    double val = fn->raw_fn(loc);
+    std::cout.precision(10);
     std::cout << fn->name << "\t";
-    std::cout << loc << " : " << val << " / " << fn->fn_max << std::endl;
+    std::cout << loc << std::endl;
+    std::cout << val << " / " << fn->fn_max << std::endl;
   }
 }
 

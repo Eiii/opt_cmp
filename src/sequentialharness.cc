@@ -56,7 +56,7 @@ void SequentialHarness::SingleRun(int run_seed, int max_samples)
 
 double SequentialHarness::Regret(const vectord& point)
 {
-  double diff = fn_.fn_max - fn_.fn(point);
+  double diff = fn_.fn_max - objective_(point);
   return diff;
 } /* Regret() */
 

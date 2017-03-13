@@ -1,6 +1,6 @@
 #pragma once
 #include <cmath>
-#include "types.h"
+#include "function.h"
 #include "timer.h"
 
 matrixd set_matrix(size_t rows, size_t cols, const std::vector<double>& vec);

@@ -56,7 +56,7 @@ double sin_helper(double x)
 Function f_sin_1 = {
   .name = "sin_1",
   .dim = 1,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 1);
     return sin_helper(i[0]);
   },
@@ -69,7 +69,7 @@ Function f_sin_1 = {
 Function f_sin_2 = {
   .name = "sin_2",
   .dim = 2,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 2);
     return sin_helper(i[0]) * sin_helper(i[1]);
   },
@@ -85,10 +85,10 @@ Function f_sin_2 = {
 Function f_peaks = {
   .name = "peaks",
   .dim = 2,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 2);
-    double x = -3 + i(0) * (3 + 3);
-    double y = -3 + i(1) * (3 + 3);
+    double x = i(0);
+    double y = i(1);
     double sum = 0.0;
     sum += 3.0 * pow(1.0 - x, 2.0) * exp(-(x * x) - pow(y + 1.0, 2.0))
            - 10.0 * (x / 5.0 - pow(x, 3.0) - pow(y, 5.0)) * exp(-(x * x) - (y * y))
@@ -96,7 +96,7 @@ Function f_peaks = {
     return sum;
   },
   .fn_max = 8.106189094771677,
-  .max_loc = {0.498447,0.763561},
+  .max_loc = {-0.009318,1.581366},
   .min_edge = {-3, -3},
   .max_edge = {3, 3}
 };
@@ -107,7 +107,7 @@ Function f_peaks = {
 Function f_branin = {
   .name = "branin",
   .dim = 2,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 2);
     double x = -5.0 + i(0) * (10.0 + 5.0);
     double y = i(1) * 15.0;
@@ -131,12 +131,11 @@ Function f_branin = {
 /***********************************************************
 * rosenbrock
 ***********************************************************/
-double rosenbrock(const vectord& input) {
-  vectord it = rescale_input(input, -5, 10);
+double rosenbrock(const vectord& x) {
   double sum = 0.0;
-  for (size_t i = 0; i < it.size()-1; i++) {
-    sum += 100.0 * pow(it(i+1) - it(i) * it(i), 2.0) 
-           + pow(1.0 - it(i), 2.0);
+  for (size_t i = 0; i < x.size()-1; i++) {
+    sum += 100.0 * pow(x(i+1) - x(i) * x(i), 2.0) 
+           + pow(1.0 - x(i), 2.0);
   }
   return -sum;
 }
@@ -144,12 +143,12 @@ double rosenbrock(const vectord& input) {
 Function f_rosenbrock_2 = {
   .name = "rosenbrock_2",
   .dim = 2,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 2);
     return rosenbrock(i);
   },
   .fn_max = 0.0,
-  .max_loc = {0.4,0.4},
+  .max_loc = {1,1},
   .min_edge = {-5, -5},
   .max_edge = {10, 10}
 };
@@ -157,12 +156,12 @@ Function f_rosenbrock_2 = {
 Function f_rosenbrock_4 = {
   .name = "rosenbrock_4",
   .dim = 4,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 4);
     return rosenbrock(i);
   },
   .fn_max = 0.0,
-  .max_loc = {0.4,0.4,0.4,0.4},
+  .max_loc = {1,1,1,1},
   .min_edge = {-5, -5, -5, -5},
   .max_edge = {10, 10, 10, 10}
 };
@@ -170,12 +169,12 @@ Function f_rosenbrock_4 = {
 Function f_rosenbrock_6 = {
   .name = "rosenbrock_6",
   .dim = 6,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 6);
     return rosenbrock(i);
   },
   .fn_max = 0.0,
-  .max_loc = {0.4,0.4,0.4,0.4,0.4,0.4},
+  .max_loc = {1,1,1,1,1,1},
   .min_edge = {-5, -5, -5, -5, -5, -5},
   .max_edge = {10, 10, 10, 10, 10, 10}
 };
@@ -183,12 +182,12 @@ Function f_rosenbrock_6 = {
 Function f_rosenbrock_8 = {
   .name = "rosenbrock_8",
   .dim = 8,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 8);
     return rosenbrock(i);
   },
   .fn_max = 0.0,
-  .max_loc = {0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4},
+  .max_loc = {1,1,1,1,1,1,1,1},
   .min_edge = {-5, -5, -5, -5, -5, -5, -5, -5},
   .max_edge = {10, 10, 10, 10, 10, 10, 10, 10}
 };
@@ -196,12 +195,12 @@ Function f_rosenbrock_8 = {
 Function f_rosenbrock_10 = {
   .name = "rosenbrock_10",
   .dim = 10,
-  .fn = [](const vectord& i) {
+  .raw_fn = [](const vectord& i) {
     assert(i.size() == 10);
     return rosenbrock(i);
   },
   .fn_max = 0.0,
-  .max_loc = {0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4,0.4},
+  .max_loc = {1,1,1,1,1,1,1,1,1,1},
   .min_edge = {-5, -5, -5, -5, -5, -5, -5, -5, -5, -5},
   .max_edge = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10}
 };
@@ -245,7 +244,7 @@ double hartman(const vectord& input,
 Function f_hartman_3 = {
   .name = "hartman_3",
   .dim = 3,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return hartman(input, alpha, a3, p3);
   },
   .fn_max = 3.86278,
@@ -257,7 +256,7 @@ Function f_hartman_3 = {
 Function f_hartman_6 = {
   .name = "hartman_6",
   .dim = 6,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return hartman(input, alpha, a6, p6);
   },
   .fn_max = 3.32237,
@@ -270,14 +269,13 @@ Function f_hartman_6 = {
 * shekel
 ***********************************************************/
 vectord b = set_vector({1, 2, 2, 4, 4, 6, 3, 7, 5, 5});
-matrixd c = set_matrix(4, 10, { 4, 1, 8, 6, 3 ,2, 5, 8, 6, 7,
+matrixd c = set_matrix(4, 10, { 4, 1, 8, 6, 3, 2, 5, 8, 6, 7,
                                 4, 1, 8, 6, 7, 9, 3, 1, 2, 3,
                                 4, 1, 8, 6, 3, 2, 5, 8, 6, 7,
                                 4, 1, 8, 6, 7, 9, 3, 1, 2, 3 });
-double shekel(const vectord& input, size_t m)
+double shekel(const vectord& in, size_t m)
 {
-  assert(input.size() == 4);
-  vectord in = rescale_input(input, 0, 10);
+  assert(in.size() == 4);
   double sum = 0.0;
   for (size_t i = 0; i < m; i++) {
     double inner = b(i) / 10.0;
@@ -292,11 +290,11 @@ double shekel(const vectord& input, size_t m)
 Function f_shekel_5 = {
   .name = "shekel_5",
   .dim = 4,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return shekel(input, 5);
   },
   .fn_max = 10.1532,
-  .max_loc = {0.4, 0.4, 0.4, 0.4},
+  .max_loc = {4, 4, 4, 4},
   .min_edge = {0, 0, 0, 0},
   .max_edge = {10, 10, 10, 10}
 };
@@ -304,11 +302,11 @@ Function f_shekel_5 = {
 Function f_shekel_7 = {
   .name = "shekel_7",
   .dim = 4,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return shekel(input, 7);
   },
   .fn_max = 10.4029,
-  .max_loc = {0.4, 0.4, 0.4, 0.4},
+  .max_loc = {4, 4, 4, 4},
   .min_edge = {0, 0, 0, 0},
   .max_edge = {10, 10, 10, 10}
 };
@@ -316,11 +314,11 @@ Function f_shekel_7 = {
 Function f_shekel_10 = {
   .name = "shekel_10",
   .dim = 4,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return shekel(input, 10);
   },
   .fn_max = 10.5364,
-  .max_loc = {0.4, 0.4, 0.4, 0.4},
+  .max_loc = {4, 4, 4, 4},
   .min_edge = {0, 0, 0, 0},
   .max_edge = {10, 10, 10, 10}
 };
@@ -329,10 +327,9 @@ Function f_shekel_10 = {
 * rastrigin
 ***********************************************************/
 
-double rastrigin(const vectord& input, size_t d)
+double rastrigin(const vectord& in, size_t d)
 {
-  assert(input.size() == d);
-  vectord in = rescale_input(input, -5.12, 3.5);
+  assert(in.size() == d);
   double r = 10.0*d;
   for (size_t i = 0; i < d; i++) {
     r += in(i)*in(i) - 10.0*cos(2.0*M_PI*in(i));
@@ -343,11 +340,11 @@ double rastrigin(const vectord& input, size_t d)
 Function f_rastrigin_2 = {
   .name = "rastrigin_2",
   .dim = 2,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return rastrigin(input, 2);
   },
   .fn_max = 0,
-  .max_loc = {0.593967517401, 0.593967517401},
+  .max_loc = {0,0},
   .min_edge = {-5.12, -5.12},
   .max_edge = {5.12, 5.12}
 };
@@ -355,11 +352,11 @@ Function f_rastrigin_2 = {
 Function f_rastrigin_4 = {
   .name = "rastrigin_4",
   .dim = 4,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return rastrigin(input, 4);
   },
   .fn_max = 0,
-  .max_loc = {0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401},
+  .max_loc = {0,0,0,0},
   .min_edge = {-5.12, -5.12, -5.12, -5.12},
   .max_edge = {5.12, 5.12, 5.12, 5.12}
 };
@@ -367,11 +364,11 @@ Function f_rastrigin_4 = {
 Function f_rastrigin_6 = {
   .name = "rastrigin_6",
   .dim = 6,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return rastrigin(input, 6);
   },
   .fn_max = 0,
-  .max_loc = {0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401},
+  .max_loc = {0,0,0,0,0,0},
   .min_edge = {-5.12, -5.12, -5.12, -5.12, -5.12, -5.12},
   .max_edge = {5.12, 5.12, 5.12, 5.12, 5.12, 5.12}
 };
@@ -379,11 +376,11 @@ Function f_rastrigin_6 = {
 Function f_rastrigin_10 = {
   .name = "rastrigin_10",
   .dim = 10,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return rastrigin(input, 10);
   },
   .fn_max = 0,
-  .max_loc = {0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401, 0.593967517401},
+  .max_loc = {0,0,0,0,0,0,0,0,0,0},
   .min_edge = {-5.12, -5.12, -5.12, -5.12, -5.12, -5.12, -5.12, -5.12, -5.12, -5.12},
   .max_edge = {5.12, 5.12, 5.12, 5.12, 5.12, 5.12, 5.12, 5.12, 5.12, 5.12}
 };
@@ -392,10 +389,9 @@ Function f_rastrigin_10 = {
 * schwefel
 ***********************************************************/
 
-double schwefel(const vectord& input, size_t d)
+double schwefel(const vectord& in, size_t d)
 {
-  assert(input.size() == d);
-  vectord in = rescale_input(input, -500, 500);
+  assert(in.size() == d);
   double r = 418.9829*d;
   for (size_t i = 0; i < d; i++) {
     r -= in(i) * sin(sqrt(fabs(in(i))));
@@ -406,11 +402,11 @@ double schwefel(const vectord& input, size_t d)
 Function f_schwefel_2 = {
   .name = "schwefel_2",
   .dim = 2,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return schwefel(input, 2);
   },
   .fn_max = 0,
-  .max_loc = {0.9209687, 0.9209687},
+  .max_loc = {420.9687,420.9687},
   .min_edge = {-500, -500},
   .max_edge = {500, 500}
 };
@@ -418,11 +414,11 @@ Function f_schwefel_2 = {
 Function f_schwefel_4 = {
   .name = "schwefel_4",
   .dim = 4,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return schwefel(input, 4);
   },
   .fn_max = 0,
-  .max_loc = {0.9209687, 0.9209687, 0.9209687, 0.9209687},
+  .max_loc = {420.9687,420.9687,420.9687,420.9687},
   .min_edge = {-500, -500, -500, -500},
   .max_edge = {500, 500, 500, 500}
 };
@@ -430,11 +426,11 @@ Function f_schwefel_4 = {
 Function f_schwefel_6 = {
   .name = "schwefel_6",
   .dim = 6,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return schwefel(input, 6);
   },
   .fn_max = 0,
-  .max_loc = {0.9209687, 0.9209687, 0.9209687, 0.9209687, 0.9209687, 0.9209687},
+  .max_loc = {420.9687,420.9687,420.9687,420.9687,420.9687,420.9687},
   .min_edge = {-500, -500, -500, -500, -500, -500},
   .max_edge = {500, 500, 500, 500, 500, 500}
 };
@@ -442,11 +438,11 @@ Function f_schwefel_6 = {
 Function f_schwefel_10 = {
   .name = "schwefel_10",
   .dim = 10,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return schwefel(input, 10);
   },
   .fn_max = 0,
-  .max_loc = {0.9209687, 0.9209687, 0.9209687, 0.9209687, 0.9209687, 0.9209687, 0.9209687, 0.9209687, 0.9209687, 0.9209687},
+  .max_loc = {420.9687,420.9687,420.9687,420.9687,420.9687,420.9687,420.9687,420.9687,420.9687,420.9687},
   .min_edge = {-500, -500, -500, -500, -500, -500, -500, -500, -500, -500},
   .max_edge = {500, 500, 500, 500, 500, 500, 500, 500, 500, 500}
 };
@@ -454,10 +450,9 @@ Function f_schwefel_10 = {
 /***********************************************************
 * ackley
 ***********************************************************/
-double ackley(const vectord& input, size_t d)
+double ackley(const vectord& in, size_t d)
 {
-  assert(input.size() == d);
-  vectord in = rescale_input(input, -22.768, 32.768);
+  assert(in.size() == d);
   double a = 20.0;
   double b = 0.2;
   double c = 2.0 * M_PI;
@@ -483,11 +478,11 @@ double ackley(const vectord& input, size_t d)
 Function f_ackley_2 = {
   .name = "ackley_2",
   .dim = 2,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return ackley(input, 2);
   },
   .fn_max = 0,
-  .max_loc = {0.409968308845, 0.409968308845},
+  .max_loc = {0,0},
   .min_edge = {-32.768, -32.768},
   .max_edge = {32.768, 32.768}
 };
@@ -495,11 +490,11 @@ Function f_ackley_2 = {
 Function f_ackley_4 = {
   .name = "ackley_4",
   .dim = 4,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return ackley(input, 4);
   },
   .fn_max = 0,
-  .max_loc = {0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845},
+  .max_loc = {0,0,0,0},
   .min_edge = {-32.768, -32.768, -32.768, -32.768, -32.768, -32.768},
   .max_edge = {32.768, 32.768, 32.768, 32.768}
 };
@@ -507,11 +502,11 @@ Function f_ackley_4 = {
 Function f_ackley_6 = {
   .name = "ackley_6",
   .dim = 6,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return ackley(input, 6);
   },
   .fn_max = 0,
-  .max_loc = {0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845},
+  .max_loc = {0,0,0,0,0,0},
   .min_edge = {-32.768, -32.768, -32.768, -32.768, -32.768, -32.768},
   .max_edge = {32.768, 32.768, 32.768, 32.768, 32.768, 32.768}
 };
@@ -519,11 +514,11 @@ Function f_ackley_6 = {
 Function f_ackley_10 = {
   .name = "ackley_10",
   .dim = 10,
-  .fn = [](const vectord& input) {
+  .raw_fn = [](const vectord& input) {
     return ackley(input, 10);
   },
   .fn_max = 0,
-  .max_loc = {0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845, 0.409968308845},
+  .max_loc = {0,0,0,0,0,0,0,0,0,0},
   .min_edge = {-32.768, -32.768, -32.768, -32.768, -32.768, -32.768, -32.768, -32.768, -32.768, -32.768},
   .max_edge = {32.768, 32.768, 32.768, 32.768, 32.768, 32.768, 32.768, 32.768, 32.768, 32.768}
 };

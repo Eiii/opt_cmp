@@ -1,17 +1,17 @@
 #pragma once
 
-#include "types.h"
+#include "function.h"
 #include "bayesopt/bayesopt.hpp"
 
 class BOModel : public bayesopt::ContinuousModel
 {
   public:
-    BOModel(bopt_params params, const Function& fn) : 
-      ContinuousModel(fn.dim, params), fn_(fn) {}
+    BOModel(bopt_params params, const Function& fn, const ObjectiveFn& obj) : 
+      ContinuousModel(fn.dim, params), obj_(obj) {}
 
     double evaluateSample(const boost::numeric::ublas::vector<double> &query)
     {
-      return -fn_.fn(query);
+      return -obj_(query);
     }
 
     bool checkReachability(const boost::numeric::ublas::vector<double> &query)
@@ -20,9 +20,7 @@ class BOModel : public bayesopt::ContinuousModel
       return true;
     }
 
-    const Function& fn() const { return fn_; }
-
   protected:
-    const Function& fn_;
+    const ObjectiveFn& obj_;
 
 };

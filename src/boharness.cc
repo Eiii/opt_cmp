@@ -23,8 +23,7 @@ BOHarness::BOHarness(const Function& fn, int seed, BOParams params, std::string 
 void BOHarness::InitEvaluation(int run_seed, int max_samples)
 {
   bopt_params params = CreateParameters(run_seed, max_samples);
-  BOModel model(params, fn_); 
-  current_model_.reset(new BOModel(params, fn_));
+  current_model_.reset(new BOModel(params, fn_, objective_));
   current_model_->initializeOptimization();
 } /* InitEvaluation() */
 

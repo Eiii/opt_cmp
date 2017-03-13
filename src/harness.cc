@@ -1,7 +1,7 @@
 #include "harness.h"
 
 Harness::Harness(std::string name, const Function& fn, int seed) :
-    rng_(seed), seed_(seed), name_(name), fn_(fn), timer_()
+    rng_(seed), seed_(seed), name_(name), fn_(tweak_edges(fn, seed)), objective_(create_scaled_fn(fn_)), timer_()
 {
 } /* Harness() */
 

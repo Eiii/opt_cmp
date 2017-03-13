@@ -3,6 +3,7 @@
 #include "types.h"
 #include "json.hpp"
 #include "timer.h"
+#include "function.h"
 
 #include <fstream>
 
@@ -28,6 +29,7 @@ class Harness
     RandomEngine rng_;
     const int seed_;
     const std::string name_;
-    const Function& fn_;
+    Function fn_;
+    ObjectiveFn objective_;
     CPUTimer timer_;
 };
