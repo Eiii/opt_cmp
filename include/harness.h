@@ -18,6 +18,7 @@ class Harness
   public:
     virtual void Evaluate(int max_samples, int iterations);
     void OutputResult(nlohmann::json* json);
+    void OutputEdges(nlohmann::json* json);
     virtual void OutputData(nlohmann::json* json) = 0;
     virtual void OutputHeader(nlohmann::json* json) = 0;
 

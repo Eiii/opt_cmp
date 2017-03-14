@@ -14,7 +14,14 @@ void Harness::OutputResult(nlohmann::json* j)
 {
   nlohmann::json entry;
   OutputHeader(&entry);
+  OutputEdges(&entry);
   OutputData(&entry);
   j->push_back(entry);
 } /* OutputResult() */
+
+void Harness::OutputEdges(nlohmann::json* j)
+{
+  (*j)["MIN_EDGES"] = fn_.min_edge;
+  (*j)["MAX_EDGES"] = fn_.max_edge;
+} /* OutputEdges() */
 

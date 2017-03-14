@@ -16,7 +16,7 @@ vectord scale_input(const vectord& v, const Function& f)
   vectord result(f.dim);
   for (int i = 0; i < f.dim; i++) {
     assert(f.min_edge[i] < f.max_edge[i]);
-    //assert(0 <= v[i] && v[i] <= 1);
+    assert(0 <= v[i] && v[i] <= 1);
     result[i] = f.min_edge[i] + v[i]*(f.max_edge[i] - f.min_edge[i]);
   }
   return result;
@@ -53,7 +53,6 @@ Function tweak_edges(const Function& f, int seed)
     new_min[i] = min_edge + min_rand();
 
     assert(new_min[i] < opt && opt < new_max[i]);
-    std::cout << new_min[i] << "\t" << opt << "\t" << new_max[i] << std::endl;
   } 
   Function new_fn = f;
   new_fn.min_edge = new_min;
