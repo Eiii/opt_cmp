@@ -124,6 +124,7 @@ bopt_params BOHarness::CreateParameters(int seed, int iterations)
 
   set_criteria(&params, criteria_.c_str());
   params.n_crit_params = 0;
+  //params.crit_params[0] = 0.5;
 
   set_kernel(&params, kernel_.c_str());
   params.kernel.hp_mean[0] = 1.0;

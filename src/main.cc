@@ -309,11 +309,21 @@ void test_fns()
   }
 }
 
+void test_bo()
+{
+  auto params = BOHarness::BOParams("cLCBkrause", "kSEISO", "sGaussianProcessML", 5, 3);
+  const auto& fn = *all_timer_functions.front();
+  int seed = 1337;
+  int samples = 20;
+  std::unique_ptr<Harness> bo(new BOHarness(fn, seed, params));
+  bo->Evaluate(samples, 1);
+}
+
 int main(int argc, const char* argv[]) 
 {
   generate_timer_functions();
   if (argc == 1) {
-    test_fns();
+    test_bo();
   } else {
     std::string out_filename;
     HarnessPtr harness;
