@@ -3,15 +3,17 @@
 
 RandomHarness::RandomHarness(const Function& fn, int seed) :
     SequentialHarness("RANDOM", fn, seed, 0),
-    has_best(true),
-    best_point()
+    has_best_(true),
+    best_point_(),
+    start_center_(true)
 {
 } /* RandomHarness() */
 
 void RandomHarness::InitEvaluation(int run_seed, int max_samples)
 {
   (void)run_seed; (void)max_samples;
-  has_best = true;
+  has_best_ = true;
+  start_center_ = true;
 } /* InitEvaluation() */
 
 vectord RandomHarness::SingleStep()
@@ -20,12 +22,18 @@ vectord RandomHarness::SingleStep()
 
   RandomReal rand(rng_, UniformRealDist(0, 1));
   for (int i = 0; i < fn_.dim; i++) {
-    rand_point(i) = rand();
+    if (start_center_) {
+      rand_point(i) = 0.5;
+    } else {
+      rand_point(i) = rand();
+    }
   }
 
-  if (has_best || Regret(rand_point) < Regret(best_point)) {
-    best_point = rand_point;
-    has_best = false;
+  start_center_ = false;
+
+  if (has_best_ || Regret(rand_point) < Regret(best_point_)) {
+    best_point_ = rand_point;
+    has_best_ = false;
   }
 
   return rand_point;
@@ -33,7 +41,7 @@ vectord RandomHarness::SingleStep()
 
 vectord RandomHarness::BestCurrent()
 {
-  return best_point;
+  return best_point_;
 } /* BestCurrent() */
 
 void RandomHarness::OutputHeader(nlohmann::json* j)

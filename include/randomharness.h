@@ -17,6 +17,7 @@ class RandomHarness : public SequentialHarness
     void OutputHeader(nlohmann::json* json) override;
 
   protected:
-    bool has_best;
-    vectord best_point;
+    bool has_best_;
+    vectord best_point_;
+    bool start_center_;
 };
