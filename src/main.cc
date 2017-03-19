@@ -15,6 +15,7 @@
 #include "bamsooharness.h"
 #include "randomharness.h"
 #include "bamlogoharness.h"
+#include "imgpoharness.h"
 
 #include "timer.h"
 
@@ -226,6 +227,17 @@ HarnessPtr create_bamlogo(int seed, const Function& fn, ArgDeque* args)
   return bamlogo;
 }
 
+HarnessPtr create_imgpo(int seed, const Function& fn, ArgDeque* args) 
+{
+  if (args->size() != 0) {
+    throw std::invalid_argument("Bad number of algorithm arguments.");
+  }
+  std::cout << "IMGPO" << std::endl;
+  std::unique_ptr<Harness> imgpo;
+  imgpo.reset(new IMGPOHarness(fn, seed));
+  return imgpo;
+}
+
 HarnessPtr create_random(int seed, const Function& fn, ArgDeque* args) 
 {
   if (args->size() != 0) {
@@ -257,6 +269,8 @@ HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args)
     return create_bamsoo(seed, fn, args);
   } else if (alg_name == "BAMLOGO") {
     return create_bamlogo(seed, fn, args);
+  } else if (alg_name == "IMGPO") {
+    return create_imgpo(seed, fn, args);
   } else {
     throw std::invalid_argument("Unknown algorithm");
   }
