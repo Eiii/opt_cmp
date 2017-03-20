@@ -6,7 +6,7 @@
 * IMGPOHarness Class
 *********************************************************************/
 IMGPOHarness::IMGPOHarness(const Function& fn, int seed) :
-    SOOHarness(fn, seed, "BaMSOO")
+    SOOHarness(fn, seed, "IMGPO")
 {
 } /* IMGPOHarness() */
 
