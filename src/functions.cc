@@ -109,8 +109,8 @@ Function f_branin = {
   .dim = 2,
   .raw_fn = [](const vectord& i) {
     assert(i.size() == 2);
-    double x = -5.0 + i(0) * (10.0 + 5.0);
-    double y = i(1) * 15.0;
+    double x = i(0);
+    double y = i(1);
     double a = 1.0;
     double b = 5.1 / (4.0 * M_PI * M_PI);
     double c = 5.0 / M_PI;
@@ -123,7 +123,7 @@ Function f_branin = {
     return -val;
   },
   .fn_max = -0.397887,
-  .max_loc = {0.123894,0.818333},
+  .max_loc = {-M_PI, 12.275},
   .min_edge = {-5, 0},
   .max_edge = {10, 15}
 };
