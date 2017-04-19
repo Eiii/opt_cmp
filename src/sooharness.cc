@@ -121,9 +121,9 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   }
 
   //Put this run's regrets into the list of all regrets
-  all_regrets_.push_back(DenseValues(run_regrets, max_samples));
-  all_times_.push_back(DenseValues(run_times, max_samples));
-  all_obj_times_.push_back(DenseValues(run_obj_times, max_samples));
+  all_regrets_.push_back(DenseValues(run_regrets));
+  all_times_.push_back(DenseValues(run_times));
+  all_obj_times_.push_back(DenseValues(run_obj_times));
   all_points_.push_back(run_points);
 }
 
@@ -153,8 +153,9 @@ void SOOHarness::OutputPoints(nlohmann::json* j) const
   (*j)["POINTS"] = all_points_;
 } /* OutputPoints() */
 
-std::vector<double> SOOHarness::DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples)
+std::vector<double> SOOHarness::DenseValues(std::vector<std::tuple<int, double>> regrets)
 {
+  int max_samples = std::get<0>(regrets.back());
   std::vector<double> result(max_samples);
   auto reg_entry = regrets.begin();
   double val = std::numeric_limits<double>::quiet_NaN();

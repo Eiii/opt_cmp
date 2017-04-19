@@ -25,7 +25,7 @@ class SOOHarness : public Harness
     void OutputTimes(nlohmann::json* j) const;
     void OutputObjTimes(nlohmann::json* j) const;
     void OutputPoints(nlohmann::json* j) const;
-    std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets, int max_samples);
+    std::vector<double> DenseValues(std::vector<std::tuple<int, double>> regrets);
 
   protected:
     std::vector<std::vector<double>> all_regrets_;
