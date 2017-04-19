@@ -13,6 +13,7 @@ class CPUTimer
     void Stop();
     void Reset();
     double ElapsedTime() const;
+    bool HasStarted() const { return has_started; }
 
   protected:
     bool is_running;

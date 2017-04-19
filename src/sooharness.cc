@@ -103,10 +103,15 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   run_regrets.push_back(std::make_pair(samples, regret));
   add_node_points(soo->step_observed_nodes(), &run_points);
 
-  while (!soo->IsFinished()) {
+  constexpr double MAX_SECS = 2000;
+  int i = 0;
+
+  while (!timer_.HasStarted() || timer_.ElapsedTime() < MAX_SECS*1e6) {
+    i++;
     timer_.Start();
     soo->Step();
     timer_.Stop();
+    std::cout << i << " / " << timer_.ElapsedTime()/1e6 << std::endl;
     int samples = GetNumSamples(soo.get());
     double regret = Regret(*soo);
     run_regrets.push_back(std::make_pair(samples, regret));
