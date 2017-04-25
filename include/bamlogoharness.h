@@ -10,5 +10,5 @@ class BaMLOGOHarness : public SOOHarness
     virtual ~BaMLOGOHarness() = default;
 
   protected:
-    std::unique_ptr<cpplogo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const override;
+    std::unique_ptr<cpplogo::RandomSOO> CreateOptimizer(int run_seed) const override;
 };

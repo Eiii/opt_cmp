@@ -5,9 +5,9 @@ Harness::Harness(std::string name, const Function& fn, int seed) :
 {
 } /* Harness() */
 
-void Harness::Evaluate(int max_samples, int iterations)
+void Harness::Evaluate(int max_secs, int iterations)
 {
-  (void)max_samples; (void)iterations;
+  (void)max_secs; (void)iterations;
 } /* Evaluate() */
 
 void Harness::OutputResult(nlohmann::json* j)

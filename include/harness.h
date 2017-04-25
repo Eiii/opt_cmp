@@ -16,7 +16,7 @@ class Harness
     virtual ~Harness() = default;
 
   public:
-    virtual void Evaluate(int max_samples, int iterations);
+    virtual void Evaluate(int max_secs, int iterations);
     void OutputResult(nlohmann::json* json);
     void OutputEdges(nlohmann::json* json);
     virtual void OutputData(nlohmann::json* json) = 0;

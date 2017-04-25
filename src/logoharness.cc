@@ -10,9 +10,9 @@ LOGOHarness::LOGOHarness(const Function& fn, int seed) :
 {
 } /* LOGOHarness() */
 
-std::unique_ptr<cpplogo::RandomSOO> LOGOHarness::CreateOptimizer(int run_seed, int max_samples) const
+std::unique_ptr<cpplogo::RandomSOO> LOGOHarness::CreateOptimizer(int run_seed) const
 {
   std::vector<int> w_sched = {3, 4, 5, 6, 8, 30};
-  cpplogo::RandomLOGO::Options options(objective_, fn_.dim, max_samples, 3, run_seed, w_sched);
+  cpplogo::RandomLOGO::Options options(objective_, fn_.dim, 10, 3, run_seed, w_sched);
   return std::unique_ptr<cpplogo::RandomLOGO>(new cpplogo::RandomLOGO(options));
 } /* CreateOptimizer() */

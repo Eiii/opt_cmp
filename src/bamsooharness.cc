@@ -10,8 +10,8 @@ BaMSOOHarness::BaMSOOHarness(const Function& fn, int seed) :
 {
 } /* BaMSOOHarness() */
 
-std::unique_ptr<cpplogo::RandomSOO> BaMSOOHarness::CreateOptimizer(int run_seed, int max_samples) const
+std::unique_ptr<cpplogo::RandomSOO> BaMSOOHarness::CreateOptimizer(int run_seed) const
 {
-  cpplogo::RandomBaMSOO::Options options(objective_, fn_.dim, max_samples, 3, run_seed);
+  cpplogo::RandomBaMSOO::Options options(objective_, fn_.dim, 10, 3, run_seed);
   return std::unique_ptr<cpplogo::RandomBaMSOO>(new cpplogo::RandomBaMSOO(options));
 } /* CreateOptimizer() */

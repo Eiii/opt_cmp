@@ -34,13 +34,13 @@ SOOHarness::SOOHarness(const Function& fn, int seed, std::string name) :
 {
 } /* SOOHarness() */
 
-void SOOHarness::Evaluate(int max_samples, int iterations)
+void SOOHarness::Evaluate(int max_secs, int iterations)
 {
-  Harness::Evaluate(max_samples, iterations);
+  Harness::Evaluate(max_secs, iterations);
   for (int i = 0; i < iterations; i++) {
     try {
       RandomInt rand_seed(rng_, UniformIntDist(0, std::numeric_limits<int>::max()));
-      SingleRun(rand_seed(), max_samples);
+      SingleRun(rand_seed(), max_secs);
 
       auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
       std::cout << std::put_time(std::localtime(&now), "%F %T") << " - ";
@@ -75,9 +75,9 @@ void SOOHarness::OutputHeader(nlohmann::json* j)
   (*j)["VERSION"] = ss.str();
 } /* OutputHeader() */
 
-std::unique_ptr<cpplogo::RandomSOO> SOOHarness::CreateOptimizer(int run_seed, int max_samples) const
+std::unique_ptr<cpplogo::RandomSOO> SOOHarness::CreateOptimizer(int run_seed) const
 {
-  cpplogo::RandomSOO::Options options(objective_, fn_.dim, max_samples, 3, run_seed);
+  cpplogo::RandomSOO::Options options(objective_, fn_.dim, 10, 3, run_seed);
   return std::unique_ptr<cpplogo::RandomSOO>(new cpplogo::RandomSOO(options));
 } /* CreateOptimizer() */
 
@@ -86,7 +86,7 @@ int SOOHarness::GetNumSamples(const cpplogo::RandomSOO* soo) const
   return soo->num_observations();
 } /* PrepareRunRegrets() */
 
-void SOOHarness::SingleRun(int run_seed, int max_samples)
+void SOOHarness::SingleRun(int run_seed, int max_secs)
 {
   timer_.Reset();
   objective_timer.Reset();
@@ -95,7 +95,7 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   vector<std::tuple<int, double>> run_obj_times;
   vector<vector<vector<double>>> run_points;
 
-  auto soo = CreateOptimizer(run_seed, max_samples);
+  auto soo = CreateOptimizer(run_seed);
 
   //Record initial regret & points
   int samples = GetNumSamples(soo.get());
@@ -103,10 +103,9 @@ void SOOHarness::SingleRun(int run_seed, int max_samples)
   run_regrets.push_back(std::make_pair(samples, regret));
   add_node_points(soo->step_observed_nodes(), &run_points);
 
-  constexpr double MAX_SECS = 2000;
   int i = 0;
 
-  while (!timer_.HasStarted() || timer_.ElapsedTime() < MAX_SECS*1e6) {
+  while (!timer_.HasStarted() || timer_.ElapsedTime() < max_secs*1e6) {
     i++;
     timer_.Start();
     soo->Step();

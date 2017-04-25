@@ -10,12 +10,12 @@ class SOOHarness : public Harness
     virtual ~SOOHarness() = default;
 
   public:
-    void Evaluate(int max_samples, int iterations) override;
+    void Evaluate(int max_secs, int iterations) override;
     void OutputData(nlohmann::json* j) override;
     void OutputHeader(nlohmann::json* j) override;
 
   protected:
-    virtual std::unique_ptr<cpplogo::RandomSOO> CreateOptimizer(int run_seed, int max_samples) const;
+    virtual std::unique_ptr<cpplogo::RandomSOO> CreateOptimizer(int run_seed) const;
     virtual int GetNumSamples(const cpplogo::RandomSOO* soo) const;
     virtual double Regret(const cpplogo::RandomSOO& logo) const;
 

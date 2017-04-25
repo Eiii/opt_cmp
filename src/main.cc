@@ -16,7 +16,6 @@
 #include "randomharness.h"
 #include "bamlogoharness.h"
 #include "imgpoharness.h"
-#include "dsooharness.h"
 
 #include "timer.h"
 
@@ -228,17 +227,6 @@ HarnessPtr create_bamlogo(int seed, const Function& fn, ArgDeque* args)
   return bamlogo;
 }
 
-HarnessPtr create_dsoo(int seed, const Function& fn, ArgDeque* args) 
-{
-  if (args->size() != 0) {
-    throw std::invalid_argument("Bad number of algorithm arguments.");
-  }
-  std::cout << "dSOO" << std::endl;
-  std::unique_ptr<Harness> dsoo;
-  dsoo.reset(new dSOOHarness(fn, seed));
-  return dsoo;
-}
-
 HarnessPtr create_imgpo(int seed, const Function& fn, ArgDeque* args) 
 {
   if (args->size() != 0) {
@@ -279,10 +267,6 @@ HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args)
     return create_logo(seed, fn, args);
   } else if (alg_name == "BAMSOO") {
     return create_bamsoo(seed, fn, args);
-  } else if (alg_name == "IMGPO") {
-    return create_imgpo(seed, fn, args);
-  } else if (alg_name == "dSOO") {
-    return create_dsoo(seed, fn, args);
   } else if (alg_name == "BAMLOGO") {
     return create_bamlogo(seed, fn, args);
   } else if (alg_name == "IMGPO") {
@@ -303,9 +287,9 @@ ArgsResult parse_args(int argc, const char* argv[])
   std::cout << "Output file: " << out_file << std::endl;
 
   //Get samples
-  int samples = std::stoi(args.front());
+  int max_sec = std::stoi(args.front());
   args.pop_front();
-  std::cout << "Samples: " << samples << std::endl;
+  std::cout << "Max sec: " << max_sec << std::endl;
 
   //Get iterations
   int iterations = std::stoi(args.front());
@@ -323,7 +307,7 @@ ArgsResult parse_args(int argc, const char* argv[])
 
   HarnessPtr harness = create_harness(seed, fn, &args);
 
-  return ArgsResult(out_file, std::move(harness), samples, iterations);
+  return ArgsResult(out_file, std::move(harness), max_sec, iterations);
 }
 
 void test_fns()
@@ -339,29 +323,19 @@ void test_fns()
   }
 }
 
-void test_bo()
-{
-  auto params = BOHarness::BOParams("cLCBkrause", "kSEISO", "sGaussianProcessML", 5, 3);
-  const auto& fn = *all_timer_functions.front();
-  int seed = 1337;
-  int samples = 20;
-  std::unique_ptr<Harness> bo(new BOHarness(fn, seed, params));
-  bo->Evaluate(samples, 1);
-}
-
 int main(int argc, const char* argv[]) 
 {
   generate_timer_functions();
   if (argc == 1) {
-    test_bo();
+    ;
   } else {
     std::string out_filename;
     HarnessPtr harness;
-    int samples, num_it;
+    int max_sec, num_it;
     cpplogo::init_logging(cpplogo::output);
     try {
-      std::tie(out_filename, harness, samples, num_it) = parse_args(argc-1, argv+1);
-      harness->Evaluate(samples, num_it); 
+      std::tie(out_filename, harness, max_sec, num_it) = parse_args(argc-1, argv+1);
+      harness->Evaluate(max_sec, num_it); 
 
       std::ofstream output;
       nlohmann::json json;
