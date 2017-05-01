@@ -146,6 +146,7 @@ bopt_params BOHarness::CreateParameters(int seed, int iterations)
   params.random_seed = seed; 
   params.n_init_samples = init_samples_;
   params.n_iterations = iterations-params.n_init_samples;
+  params.n_inner_iterations = 500/4;
   params.init_method = 3; //Uniform samples
   params.n_iter_relearn = it_relearn_;
   params.force_jump = 0; //Don't jump
