@@ -39,6 +39,7 @@ std::vector<const Function*> all_functions = {
   &f_shekel_10,
   &f_hartman_6,
   &f_rosenbrock_10,
+  &f_rosenbrock_1000,
   &f_rastrigin_2,
   &f_rastrigin_4,
   &f_rastrigin_6,

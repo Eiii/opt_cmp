@@ -36,6 +36,7 @@ extern Function f_rosenbrock_4;
 extern Function f_rosenbrock_6;
 extern Function f_rosenbrock_8;
 extern Function f_rosenbrock_10;
+extern Function f_rosenbrock_1000;
 
 /***********************************************************
 * hartman
