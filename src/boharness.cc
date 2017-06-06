@@ -122,9 +122,17 @@ bopt_params BOHarness::CreateParameters(int seed, int iterations)
 {
   bopt_params params = initialize_parameters_to_default();
 
-  set_criteria(&params, criteria_.c_str());
-  params.n_crit_params = 0;
-  //params.crit_params[0] = 0.5;
+  const std::string beta_prefix = "cLCB-";
+  if (criteria_.find(beta_prefix) == 0) {
+    set_criteria(&params, "cLCB");
+    std::string beta_str = criteria_.substr(beta_prefix.size());
+    double beta = std::stod(beta_str);
+    params.n_crit_params = 1;
+    params.crit_params[0] = beta;
+  } else {
+    set_criteria(&params, criteria_.c_str());
+    params.n_crit_params = 0;
+  }
 
   set_kernel(&params, kernel_.c_str());
   params.kernel.hp_mean[0] = 1.0;
