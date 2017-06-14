@@ -5,7 +5,7 @@
 class DIRECTHarness : public Harness
 {
   public:
-    DIRECTHarness(const Function& fn, int seed, std::string name="SOO");
+    DIRECTHarness(const Function& fn, int seed, std::string name="DIRECT");
     virtual ~DIRECTHarness() = default;
 
   public:
@@ -15,7 +15,7 @@ class DIRECTHarness : public Harness
 
   protected:
     void SingleRun(int run_seed, int max_samples);
-    double Regret() const;
+    double Regret(std::vector<double> pt) const;
     void OutputRegrets(nlohmann::json* j) const;
     void OutputPoints(nlohmann::json* j) const;
 

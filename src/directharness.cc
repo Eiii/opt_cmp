@@ -71,14 +71,26 @@ void DIRECTHarness::SingleRun(int run_seed, int max_samples)
   double val;
   opt.optimize(pt, val);
 
+  //Check that things went okay
+  assert(run_points.size() == (size_t)max_samples);
+
+  //Calculate step regret
+  double best_regret = std::numeric_limits<double>::infinity();
+  for (const auto& pt : run_points) {
+    double regret = Regret(pt); 
+    best_regret = std::min(regret, best_regret);
+    run_regrets.push_back(best_regret);
+  }
+
   //Put this run's regrets into the list of all regrets
   all_regrets_.push_back(run_regrets);
   all_points_.push_back(run_points);
 } /* SingleRun() */
 
-double DIRECTHarness::Regret() const
+double DIRECTHarness::Regret(std::vector<double> pt) const
 {
-  return 0.0; //TODO
+  double regret = fn_.fn_max - objective_(vector_to_vectord(pt));
+  return regret;
 } /* Regret() */
 
 void DIRECTHarness::OutputRegrets(nlohmann::json* j) const
@@ -95,6 +107,7 @@ double DIRECTObjective(const std::vector<double>& x, std::vector<double>& grad, 
 {
   DIRECTData* dd = static_cast<DIRECTData*>(f_data);
   auto objective_fn = *dd->objective;
+  dd->run_points->push_back(x);
   double val = objective_fn(vector_to_vectord(x));
   grad.clear();
   return val;

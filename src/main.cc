@@ -17,6 +17,7 @@
 #include "bamlogoharness.h"
 #include "imgpoharness.h"
 #include "dsooharness.h"
+#include "directharness.h"
 
 #include "timer.h"
 
@@ -261,6 +262,17 @@ HarnessPtr create_random(int seed, const Function& fn, ArgDeque* args)
   return random;
 }
 
+HarnessPtr create_direct(int seed, const Function& fn, ArgDeque* args) 
+{
+  if (args->size() != 0) {
+    throw std::invalid_argument("Bad number of algorithm arguments.");
+  }
+  std::cout << "DIRECT" << std::endl;
+  std::unique_ptr<Harness> direct;
+  direct.reset(new DIRECTHarness(fn, seed));
+  return direct;
+}
+
 HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args) 
 {
   std::string alg_name = args->front();
@@ -287,6 +299,8 @@ HarnessPtr create_harness(int seed, const Function& fn, ArgDeque* args)
     return create_bamlogo(seed, fn, args);
   } else if (alg_name == "IMGPO") {
     return create_imgpo(seed, fn, args);
+  } else if (alg_name == "DIRECT") {
+    return create_direct(seed, fn, args);
   } else {
     throw std::invalid_argument("Unknown algorithm");
   }
